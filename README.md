@@ -33,6 +33,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
     <em> _Table 1: Discriminator of DCGAN_</em>
 </p>
 <div align="center">
+  
 |            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |   INPUT (IMAGE)  |                   |             |  3x64x64  |        |        |         |
@@ -42,6 +43,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |     4      |      CONV 2D     |     Leaky ReLU    |     512     |  512×4×4  |    4   |    2   |    1    |
 |     5      |      CONV 2D     |       Sigmoid     |      1      |   1×1×1   |    4   |    2   |    1    |
 |            |  OUTPUT (PROB.)  |                   |             |     1     |        |        |         |
+
 </div>
 
 <p align="center">
@@ -49,6 +51,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 </p>
 
 <div align="center">
+  
 |            |          Layer         |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |      INPUT (NOISE)     |                   |             |  100×1× 1 |        |        |         |
@@ -58,6 +61,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |     4      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     128     | 128×32×32 |    4   |    1   |    0    |
 |     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    1   |    0    |
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
+
 </div>
 
 ### 2.3 Loss
@@ -85,6 +89,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 </p>
 
 <div align="center">
+  
 |   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
 |---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
@@ -98,6 +103,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 | 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
 | 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
 |   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+
 </div>
 
 <p align="center">
@@ -105,6 +111,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 </p>
 
 <div align="center">
+  
 |   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
 |---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
@@ -118,6 +125,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 | 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
 | 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
 |   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+
 </div>
 
 ### 3.3 Loss
