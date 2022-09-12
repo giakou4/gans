@@ -8,10 +8,13 @@ Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
 
 ## 1. Simple GAN
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
+
+<div align="center">
 |            | **Generator** |    **Discriminator**    |
 |------------|:-------------:|:-----------------------:|
 | **Input**  |     noise     |          image          |
 | **Output** |     image     | probability (real/fake) |
+</div>
 
 ## 2. DCGAN
 <p align="center">
@@ -24,8 +27,10 @@ In recent years, supervised learning with convolutional networks (CNNs) has seen
 ### 2.2 Generator and Discriminator
 Models include Convolutional Neural Networks (CNN) since images are used. Discriminator uses Convolutional layers while Generator uses Transpose Convolutional layers. The output of Discriminator passes through a Sigmoid activation function since it represents probability (fake or real), while the output of Generators though a Tanh, to assure the output is an image and is within [-1,1].
 
-_Table 1: Discriminator of DCGAN_ 
-
+<p align="center">
+    <em> _Table 1: Discriminator of DCGAN_</em>
+</p>
+<div align="center">
 |            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |   INPUT (IMAGE)  |                   |             |  3x64x64  |        |        |         |
@@ -35,8 +40,13 @@ _Table 1: Discriminator of DCGAN_
 |     4      |      CONV 2D     |     Leaky ReLU    |     512     |  512×4×4  |    4   |    2   |    1    |
 |     5      |      CONV 2D     |       Sigmoid     |      1      |   1×1×1   |    4   |    2   |    1    |
 |            |  OUTPUT (PROB.)  |                   |             |     1     |        |        |         |
+</div>
 
-_Table 2: Generator of DCGAN_ 
+<p align="center">
+    <em> _Table 2: Generator of DCGAN_</em>
+</p>
+
+<div align="center">
 |            |          Layer         |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |      INPUT (NOISE)     |                   |             |  100×1× 1 |        |        |         |
@@ -46,6 +56,7 @@ _Table 2: Generator of DCGAN_
 |     4      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     128     | 128×32×32 |    4   |    1   |    0    |
 |     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    1   |    0    |
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
+</div>
 
 ### 2.3 Loss
 The objective of the Discriminator and Generator (loss function) are:
@@ -67,22 +78,11 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 
 Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
 
-_Table 3: Critic of WCGAN_ 
-|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
-|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
-|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
-| 1 | B1 | CONV TRANSPOSE 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
-| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 3 | B2 | CONV TRANSPOSE 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
-| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 5 | B3 | CONV TRANSPOSE 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
-| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 7 | B4 | CONV TRANSPOSE 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
-| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
-|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+<p align="center">
+    <em> _Table 3: Critic of WCGAN_</em>
+</p>
 
-_Table 4: Generator of WCGAN_ 
+<div align="center">
 |   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
 |---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
@@ -96,6 +96,27 @@ _Table 4: Generator of WCGAN_
 | 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
 | 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
 |   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+</div>
+
+<p align="center">
+    <em> _Table 4: Generator of WCGAN_</em>
+</p>
+
+<div align="center">
+|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
+|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
+|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
+| 1 | B1 | CONV TRANSPOSE 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
+| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 3 | B2 | CONV TRANSPOSE 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
+| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 5 | B3 | CONV TRANSPOSE 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
+| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 7 | B4 | CONV TRANSPOSE 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
+| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
+|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+</div>
 
 ### 3.3 Loss
 
