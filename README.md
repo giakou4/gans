@@ -45,11 +45,8 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 ### 4.1 Abstract (2017)
 Generative Adversarial Networks (GANs) are powerful generative models, but suffer from training instability. The recently proposedWasserstein GAN (WGAN) makes progress toward stable training of GANs, but sometimes can still generate only poor samples or fail to converge. We find that these problems are often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic, which can lead to undesired behavior. We propose an alternative to clipping weights: penalize the norm of gradient of the critic with respect to its input. Our proposed method performs better than standard WGAN and enables stable training of a wide variety of GAN architectures with almost no hyperparameter tuning, including 101-layer ResNets and language models with continuous generators. We also achieve high quality generations on CIFAR-10 and LSUN bedrooms.
 
-### 4.2 Models: Generator and Critic
-
-### 4.3 Loss
-
-### 4.4 Training
+### 4.2 Model, Loss, Training
+The paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same model.
 
 ## 5. Conditional GAN
 <p align="center">
