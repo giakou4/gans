@@ -10,10 +10,12 @@ Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
 
 <div align="center">
+  
 |            | **Generator** |    **Discriminator**    |
 |------------|:-------------:|:-----------------------:|
 | **Input**  |     noise     |          image          |
 | **Output** |     image     | probability (real/fake) |
+
 </div>
 
 ## 2. DCGAN
