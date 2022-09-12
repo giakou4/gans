@@ -43,7 +43,7 @@ Generative Adversarial Nets [8] were recently introduced as a novel way to train
 We investigate conditional adversarial networks as a general-purpose solution to image-to-image translation problems. These networks not only learn the mapping from input image to output image, but also learn a loss function to train this mapping. This makes it possible to apply the same generic approach to problems that traditionally would require very different loss formulations. We demonstrate that this approach is effective at synthesizing photos from label maps, reconstructing objects from edge maps, and colorizing images, among other tasks. Indeed, since the release of the pix2pix software associated with this paper, a large number of internet users (many of them artists) have posted their own experiments with our system, further demonstrating its wide applicability and ease of adoption without the need for parameter tweaking. As a community, we no longer hand-engineer our mapping functions, and this work suggests we can achieve reasonable results without hand-engineering our loss functions either.
 
 <p align="center">
-  <img src="https://i.ibb.co/ChcTqGc/4-UNET.jpg" width="500" height="400">
+  <img src="https://i.ibb.co/ChcTqGc/4-UNET.jpg" width="535" height="335">
 </p>
 
 ## 7. CycleGAN
@@ -55,7 +55,7 @@ Image-to-image translation is a class of vision and graphics problems where the 
 
 ## 8. ProGAN
 <p align="center">
-  <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="500" height="200">
+  <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="200" height="500">
 </p>
 ### Abstract
 We describe a new training methodology for generative adversarial networks. The key idea is to grow both the generator and discriminator progressively: starting from a low resolution, we add new layers that model increasingly fine details as training progresses. This both speeds the training up and greatly stabilizes it, allowing us to produce images of unprecedented quality, e.g., CELEBA images at 10242. We also propose a simple way to increase the variation in generated images, and achieve a record inception score of 8:80 in unsupervised CIFAR10. Additionally, we describe several implementation details that are important for discouraging unhealthy competition between the generator and discriminator. Finally, we suggest a new metric for evaluating GAN results, both in terms of image quality and variation. As an additional contribution, we construct a higher-quality version of the CELEBA dataset.
