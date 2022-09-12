@@ -8,6 +8,10 @@ Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
 
 ## 1. Simple GAN
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
+|            | **Generator** |    **Discriminator**    |
+|------------|:-------------:|:-----------------------:|
+| **Input**  |     noise     |          image          |
+| **Output** |     image     | probability (real/fake) |
 
 ## 2. DCGAN
 <p align="center">
@@ -18,10 +22,49 @@ GANs consist of 2 networks playing an adversarial game against each other: a Gen
 In recent years, supervised learning with convolutional networks (CNNs) has seen huge adoption in computer vision applications. Comparatively, unsupervised learning with CNNs has received less attention. In this work we hope to help bridge the gap between the success of CNNs for supervised learning and unsupervised learning. We introduce a class of CNNs called deep convolutional generativeadversarial networks (DCGANs), that have certain architectural constraints, and demonstrate that they are a strong candidate for unsupervised learning. Training on various image datasets, we show convincing evidence that our deep convolutional adversarial pair learns a hierarchy of representations from object parts to scenes in both the generator and discriminator. Additionally, we use the learned features for novel tasks - demonstrating their applicability as general image representations
 
 ### 2.2 Models: Generator and Discriminator
+Models include Convolutional Neural Networks (CNN) since images are used. Discriminator uses Convolutional layers while Generator uses Transpose Convolutional layers. The output of Discriminator passes through a Sigmoid activation function since it represents probability (fake or real), while the output of Generators though a Tanh, to assure the output is an image and is within [-1,1].
+
+_Table 1: Discriminator of DCGAN_ 
+
+|            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
+|------------|:----------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
+|            |   INPUT (IMAGE)  |                   |             |  3x64x64  |        |        |         |
+|      1     |      CONV 2D     |     Leaky ReLU    |      64     |  64×32×32 |    4   |    2   |    1    |
+|     2      |      CONV 2D     |     Leaky ReLU    |     128     | 128×16×16 |    4   |    2   |    1    |
+|     3      |      CONV 2D     |     Leaky ReLU    |     256     |  256×8×8  |    4   |    2   |    1    |
+|     4      |      CONV 2D     |     Leaky ReLU    |     512     |  512×4×4  |    4   |    2   |    1    |
+|     5      |      CONV 2D     |       Sigmoid     |      1      |   1×1×1   |    4   |    2   |    1    |
+|            |  OUTPUT (PROB.)  |                   |             |     1     |        |        |         |
+
+_Table 2: Generator of DCGAN_ 
+|            |          Layer         |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
+|------------|:----------------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
+|            |      INPUT (NOISE)     |                   |             |  100×1× 1 |        |        |         |
+|      1     |      CONV TRANSPOSE 2D |     Leaky ReLU    |     1024    |  1024×4×4 |    4   |    1   |    0    |
+|     2      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     512     |  512×8×8  |    4   |    1   |    0    |
+|     3      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     256     | 256×16×16 |    4   |    1   |    0    |
+|     4      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     128     | 128×32×32 |    4   |    1   |    0    |
+|     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    1   |    0    |
+|            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
 
 ### 2.3 Loss
+The loss of the Discriminator and Generator are
+* Loss Discriminator:  $$max [ E(log(D(x)+log(1-D(G(z))) ]$$
+* Loss Generator: $$min[E(log(1-D(G(z))))]$$
+
+where $$E$$ denotes the expected value (mean), where they both can be expressed as
+* Loss: $$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
 
 ### 2.4 Training
+The training structure is the following:
+* Create random noise of size: $$batch\_size × noise\_dim × 1 × 1$$
+* Get $$fake=G(noise)$$
+* Train Discriminator
+    * Get $$disc\_real=D(real)$$ and $$disc\_fake=D(fake)$$
+    * Calculate loss of $$D$$ and backpropagate
+*  Train Generator
+    * Get $$output=D(fake)$$
+    * Calculate loss of $$G$$ and backpropagate
 
 ## 3. WGAN
 <p align="center">
@@ -33,20 +76,60 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 
 ### 3.2 Models: Generator and Critic
 
+Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
+
+_Table 3: Critic of WCGAN_ 
+|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
+|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
+|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
+| 1 | B1 | CONV TRANSPOSE 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
+| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 3 | B2 | CONV TRANSPOSE 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
+| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 5 | B3 | CONV TRANSPOSE 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
+| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 7 | B4 | CONV TRANSPOSE 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
+| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
+|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+
+_Table 4: Generator of WCGAN_ 
+|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
+|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
+|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
+| 1 | B1 | CONV TRANSPOSE 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
+| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 3 | B2 | CONV TRANSPOSE 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
+| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 5 | B3 | CONV TRANSPOSE 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
+| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 7 | B4 | CONV TRANSPOSE 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
+| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
+| 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
+|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+
 ### 3.3 Loss
 
+We want the distribution of generator $$P_g$$ and of the real images $$P_r$$ to be similar. How to define distance between distributions (e.g., Kullback-Leibler (KL) divergence, Jensen-Shannon (JS) divergence, Wasserstein Distance)?
+
+$$max(E_{x-P_r} [D(x)]-E_{x-P_g}[D(x)])$$
+
+Discriminator wants to maximize the above equation, while Generator was to minimize. Converge when it’s close to 0. Hence, loss means something!
+
 ### 3.4 Training
+For training, everything is same, except for the loss function and the fact that for every epoch, we do 5 iterations to train Critic, and 1 for Generator.
 
 ## 4. WGAN-GP (with Gradient Penalty)
 <p align="center">
   <img src="https://i.ibb.co/BBtZ2Wc/2-WGAN.png" width="300" height="200">
 </p>
 
+
 ### 4.1 Abstract (2017)
 Generative Adversarial Networks (GANs) are powerful generative models, but suffer from training instability. The recently proposedWasserstein GAN (WGAN) makes progress toward stable training of GANs, but sometimes can still generate only poor samples or fail to converge. We find that these problems are often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic, which can lead to undesired behavior. We propose an alternative to clipping weights: penalize the norm of gradient of the critic with respect to its input. Our proposed method performs better than standard WGAN and enables stable training of a wide variety of GAN architectures with almost no hyperparameter tuning, including 101-layer ResNets and language models with continuous generators. We also achieve high quality generations on CIFAR-10 and LSUN bedrooms.
 
-### 4.2 Model, Loss, Training
-The paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same model.
+### 4.2 Models, Loss, Training
+A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same model
 
 ## 5. Conditional GAN
 <p align="center">
@@ -57,10 +140,13 @@ The paper introduced the WGAN with Gradient Penalty (GP), where in the loss func
 Generative Adversarial Nets were recently introduced as a novel way to train generative models. In this work we introduce the conditional version of generative adversarial nets, which can be constructed by simply feeding the data, y, we wish to condition on to both the generator and discriminator. We show that this model can generate MNIST digits conditioned on class labels. We also illustrate how this model could be used to learn a multi-modal model, and provide preliminary examples of an application to image tagging in which we demonstrate how this approach can generate descriptive tags which are not part of training labels.
 
 ### 5.2 Models: Generator and Critic
+Discriminator includes an embedding from number of classes $$num\_classes$$ to the image’s size squared $$(img\_size)^2$$. The labels are embedded in that layer and resized to $$img\_size×img\_size$$. As a result, the first CONV 2D layer has 3+1 channels. Generator also includes an embedding. The labels are embedded and unsqueezed twice producing an extra channel. As a result, the first CONV 2D layer has 3+1 channels.
 
 ### 5.3 Loss
+Same as WGAN-GP.
 
 ### 5.4 Training
+Same as WGAN-GP.
 
 ## 6. Pix2Pix
 <p align="center">
