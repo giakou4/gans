@@ -30,7 +30,7 @@ In recent years, supervised learning with convolutional networks (CNNs) has seen
 Models include Convolutional Neural Networks (CNN) since images are used. Discriminator uses Convolutional layers while Generator uses Transpose Convolutional layers. The output of Discriminator passes through a Sigmoid activation function since it represents probability (fake or real), while the output of Generators though a Tanh, to assure the output is an image and is within [-1,1].
 
 <p align="center">
-    <em> _Table 1: Discriminator of DCGAN_</em>
+    <em> Table 1: Discriminator of DCGAN</em>
 </p>
 <div align="center">
   
@@ -47,7 +47,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 </div>
 
 <p align="center">
-    <em> _Table 2: Generator of DCGAN_</em>
+    <em> Table 2: Generator of DCGAN </em>
 </p>
 
 <div align="center">
@@ -85,7 +85,7 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
 
 <p align="center">
-    <em> _Table 3: Critic of WCGAN_</em>
+    <em> Table 3: Critic of WCGAN </em>
 </p>
 
 <div align="center">
@@ -107,7 +107,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 </div>
 
 <p align="center">
-    <em> _Table 4: Generator of WCGAN_</em>
+    <em> Table 4: Generator of WCGAN </em>
 </p>
 
 <div align="center">
