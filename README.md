@@ -159,7 +159,7 @@ Conditional GANs have information about the label, so both Discriminator and Gen
 
 ## 6. Pix2Pix
 <p align="center">
-  <img src="https://i.ibb.co/c1S0F6L/4-Pix2-Pix.jpg" width="500" height="350">
+  <img src="https://i.ibb.co/c1S0F6L/4-Pix2-Pix.jpg" width="600" height="450">
 </p>
 
 ### 6.1 Abstract (2018)
