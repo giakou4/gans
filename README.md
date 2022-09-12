@@ -37,25 +37,25 @@ Generative Adversarial Nets [8] were recently introduced as a novel way to train
 
 ## 6. Pix2Pix
 <p align="center">
-  <img src="https://i.ibb.co/c1S0F6L/4-Pix2-Pix.jpg" width="300" height="200">
+  <img src="https://i.ibb.co/c1S0F6L/4-Pix2-Pix.jpg" width="500" height="350">
 </p>
 ### Abstract
 We investigate conditional adversarial networks as a general-purpose solution to image-to-image translation problems. These networks not only learn the mapping from input image to output image, but also learn a loss function to train this mapping. This makes it possible to apply the same generic approach to problems that traditionally would require very different loss formulations. We demonstrate that this approach is effective at synthesizing photos from label maps, reconstructing objects from edge maps, and colorizing images, among other tasks. Indeed, since the release of the pix2pix software associated with this paper, a large number of internet users (many of them artists) have posted their own experiments with our system, further demonstrating its wide applicability and ease of adoption without the need for parameter tweaking. As a community, we no longer hand-engineer our mapping functions, and this work suggests we can achieve reasonable results without hand-engineering our loss functions either.
 
 <p align="center">
-  <img src="https://ibb.co/cDB7PnB" width="300" height="200">
+  <img src="https://i.ibb.co/ChcTqGc/4-UNET.jpg" width="500" height="400">
 </p>
 
 ## 7. CycleGAN
 <p align="center">
-  <img src="https://i.ibb.co/mHpVJDh/5-Cycle-GAN.png" width="300" height="200">
+  <img src="https://i.ibb.co/mHpVJDh/5-Cycle-GAN.png"  width="500" height="350">
 </p>
 ### Abstract
 Image-to-image translation is a class of vision and graphics problems where the goal is to learn the mapping between an input image and an output image using a training set of aligned image pairs. However, for many tasks, paired training data will not be available. We present an approach for learning to translate an image from a source domain X to a target domain Y in the absence of paired examples. Our goal is to learn a mapping G : X ! Y such that the distribution of images from G(X) is indistinguishable from the distribution Y using an adversarial loss. Because this mapping is highly under-constrained, we couple it with an inverse mapping F : Y ! X and introduce a cycle consistency loss to enforce F(G(X))  X (and vice versa). Qualitative results are presented on several tasks where paired training data does not exist, including collection style transfer, object transfiguration, season transfer, photo enhancement, etc. Quantitative comparisons against several prior methods demonstrate the superiority of our approach.
 
 ## 8. ProGAN
 <p align="center">
-  <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="300" height="200">
+  <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="500" height="200">
 </p>
 ### Abstract
 We describe a new training methodology for generative adversarial networks. The key idea is to grow both the generator and discriminator progressively: starting from a low resolution, we add new layers that model increasingly fine details as training progresses. This both speeds the training up and greatly stabilizes it, allowing us to produce images of unprecedented quality, e.g., CELEBA images at 10242. We also propose a simple way to increase the variation in generated images, and achieve a record inception score of 8:80 in unsupervised CIFAR10. Additionally, we describe several implementation details that are important for discouraging unhealthy competition between the generator and discriminator. Finally, we suggest a new metric for evaluating GAN results, both in terms of image quality and variation. As an additional contribution, we construct a higher-quality version of the CELEBA dataset.
