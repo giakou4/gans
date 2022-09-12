@@ -21,7 +21,7 @@ GANs consist of 2 networks playing an adversarial game against each other: a Gen
 ### 2.1 Abstract (2016)
 In recent years, supervised learning with convolutional networks (CNNs) has seen huge adoption in computer vision applications. Comparatively, unsupervised learning with CNNs has received less attention. In this work we hope to help bridge the gap between the success of CNNs for supervised learning and unsupervised learning. We introduce a class of CNNs called deep convolutional generativeadversarial networks (DCGANs), that have certain architectural constraints, and demonstrate that they are a strong candidate for unsupervised learning. Training on various image datasets, we show convincing evidence that our deep convolutional adversarial pair learns a hierarchy of representations from object parts to scenes in both the generator and discriminator. Additionally, we use the learned features for novel tasks - demonstrating their applicability as general image representations
 
-### 2.2 Models: Generator and Discriminator
+### 2.2 Generator and Discriminator
 Models include Convolutional Neural Networks (CNN) since images are used. Discriminator uses Convolutional layers while Generator uses Transpose Convolutional layers. The output of Discriminator passes through a Sigmoid activation function since it represents probability (fake or real), while the output of Generators though a Tanh, to assure the output is an image and is within [-1,1].
 
 _Table 1: Discriminator of DCGAN_ 
@@ -52,19 +52,8 @@ The loss of the Discriminator and Generator are
 * Loss Discriminator:  $$max [ E(log(D(x)+log(1-D(G(z))) ]$$
 * Loss Generator: $$min[E(log(1-D(G(z))))]$$
 
-where $$E$$ denotes the expected value (mean), where they both can be expressed as
+where they both can be expressed as
 * Loss: $$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
-
-### 2.4 Training
-The training structure is the following:
-* Create random noise of size: $$batch\_size × noise\_dim × 1 × 1$$
-* Get $$fake=G(noise)$$
-* Train Discriminator
-    * Get $$disc\_real=D(real)$$ and $$disc\_fake=D(fake)$$
-    * Calculate loss of $$D$$ and backpropagate
-*  Train Generator
-    * Get $$output=D(fake)$$
-    * Calculate loss of $$G$$ and backpropagate
 
 ## 3. WGAN
 <p align="center">
@@ -74,7 +63,7 @@ The training structure is the following:
 ### 3.1 Abstract (2017)
 We introduce a new algorithm named WGAN, an alternative to traditional GAN training. In this new model, we show that we can improve the stability of learning, get rid of problems like mode collapse, and provide meaningful learning curves useful for debugging and hyperparameter searches. Furthermore, we show that the corresponding optimization problem is sound, and provide extensive theoretical work highlighting the deep connections to other distances between distributions.
 
-### 3.2 Models: Generator and Critic
+### 3.2 Generator and Critic
 
 Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
 
@@ -116,20 +105,15 @@ $$max(E_{x-P_r} [D(x)]-E_{x-P_g}[D(x)])$$
 
 Discriminator wants to maximize the above equation, while Generator was to minimize. Converge when it’s close to 0. Hence, loss means something!
 
-### 3.4 Training
-For training, everything is same, except for the loss function and the fact that for every epoch, we do 5 iterations to train Critic, and 1 for Generator.
-
 ## 4. WGAN-GP (with Gradient Penalty)
 <p align="center">
   <img src="https://i.ibb.co/BBtZ2Wc/2-WGAN.png" width="300" height="200">
 </p>
 
+A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same models for Generator and Critic. The only difference lies is the loss back propagated.
 
 ### 4.1 Abstract (2017)
 Generative Adversarial Networks (GANs) are powerful generative models, but suffer from training instability. The recently proposedWasserstein GAN (WGAN) makes progress toward stable training of GANs, but sometimes can still generate only poor samples or fail to converge. We find that these problems are often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic, which can lead to undesired behavior. We propose an alternative to clipping weights: penalize the norm of gradient of the critic with respect to its input. Our proposed method performs better than standard WGAN and enables stable training of a wide variety of GAN architectures with almost no hyperparameter tuning, including 101-layer ResNets and language models with continuous generators. We also achieve high quality generations on CIFAR-10 and LSUN bedrooms.
-
-### 4.2 Models, Loss, Training
-A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same model
 
 ## 5. Conditional GAN
 <p align="center">
@@ -139,14 +123,8 @@ A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss fu
 ### 5.1 Abstract (2017)
 Generative Adversarial Nets were recently introduced as a novel way to train generative models. In this work we introduce the conditional version of generative adversarial nets, which can be constructed by simply feeding the data, y, we wish to condition on to both the generator and discriminator. We show that this model can generate MNIST digits conditioned on class labels. We also illustrate how this model could be used to learn a multi-modal model, and provide preliminary examples of an application to image tagging in which we demonstrate how this approach can generate descriptive tags which are not part of training labels.
 
-### 5.2 Models: Generator and Critic
-Discriminator includes an embedding from number of classes $$num\_classes$$ to the image’s size squared $$(img\_size)^2$$. The labels are embedded in that layer and resized to $$img\_size×img\_size$$. As a result, the first CONV 2D layer has 3+1 channels. Generator also includes an embedding. The labels are embedded and unsqueezed twice producing an extra channel. As a result, the first CONV 2D layer has 3+1 channels.
-
-### 5.3 Loss
-Same as WGAN-GP.
-
-### 5.4 Training
-Same as WGAN-GP.
+### 5.2 Generator and Critic
+Conditional GANs have information about the label, so both Discriminator and Generator are supervised. The Generator generates what you want him to generate. It can be seen as an extension of WGAN. Discriminator includes an embedding from number of classes $$num\_classes$$ to the image’s size squared $$(img\_size)^2$$. The labels are embedded in that layer and resized to $$img\_size×img\_size$$. As a result, the first CONV 2D layer has 3+1 channels. Generator also includes an embedding. The labels are embedded and unsqueezed twice producing an extra channel. As a result, the first CONV 2D layer has 3+1 channels.
 
 ## 6. Pix2Pix
 <p align="center">
@@ -163,8 +141,6 @@ We investigate conditional adversarial networks as a general-purpose solution to
 
 ### 6.3 Loss
 
-### 6.4 Training
-
 
 ## 7. CycleGAN
 <p align="center">
@@ -178,8 +154,6 @@ Image-to-image translation is a class of vision and graphics problems where the 
 
 ### 7.3 Loss
 
-### 7.4 Training
-
 ## 8. ProGAN 
 <p align="center">
   <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="200" height="350">
@@ -191,8 +165,6 @@ We describe a new training methodology for generative adversarial networks. The 
 ### 8.2 Models: Generator and Discriminator
 
 ### 8.3 Loss
-
-### 8.4 Training
 
 ## 9. SRGAN
 <p align="center">
@@ -207,8 +179,6 @@ largely unsolved: how do we recover the finer texture details when we super-reso
 
 ### 9.3 Loss
 
-### 9.4 Training
-
 ## 10. ESRGAN
 <p align="center">
   <img src="https://i.ibb.co/YDZKWf0/7-SRGAN.png" width="300" height="200">
@@ -220,5 +190,3 @@ Abstract. The Super-Resolution Generative Adversarial Network (SRGAN) is a semin
 ### 10.2 Models: Generator and Discriminator
 
 ### 10.3 Loss
-
-### 10.4 Training
