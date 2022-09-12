@@ -48,11 +48,11 @@ _Table 2: Generator of DCGAN_
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
 
 ### 2.3 Loss
-The loss of the Discriminator and Generator are in order:
+The objective of the Discriminator and Generator (loss function) are in order:
 $$max [ E(log(D(x)+log(1-D(G(z))) ]$$
 $$min[E(log(1-D(G(z))))]$$
 where they both can be expressed as
-Loss: $$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
+$$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
 
 ## 3. WGAN
 <p align="center">
@@ -98,7 +98,7 @@ _Table 4: Generator of WCGAN_
 
 ### 3.3 Loss
 
-We want the distribution of generator $$P_g$$ and of the real images $$P_r$$ to be similar. How to define distance between distributions (e.g., Kullback-Leibler (KL) divergence, Jensen-Shannon (JS) divergence, Wasserstein Distance)?
+We want the distribution of generator $P_g$ and of the real images $P_r$ to be similar. How to define distance between distributions (e.g., Kullback-Leibler (KL) divergence, Jensen-Shannon (JS) divergence, Wasserstein Distance)?
 
 $$max(E_{x-P_r} [D(x)]-E_{x-P_g}[D(x)])$$
 
