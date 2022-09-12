@@ -48,9 +48,9 @@ _Table 2: Generator of DCGAN_
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
 
 ### 2.3 Loss
-The objective of the Discriminator and Generator (loss function) are in order:
-$$max [ E(log(D(x)+log(1-D(G(z))) ]$$
-$$min[E(log(1-D(G(z))))]$$
+The objective of the Discriminator and Generator (loss function) are:
+Discriminator: $max [ E(log(D(x)+log(1-D(G(z))) ]$
+Generator: $min[E(log(1-D(G(z))))]$
 where they both can be expressed as
 $$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
 
@@ -123,7 +123,7 @@ Generative Adversarial Networks (GANs) are powerful generative models, but suffe
 Generative Adversarial Nets were recently introduced as a novel way to train generative models. In this work we introduce the conditional version of generative adversarial nets, which can be constructed by simply feeding the data, y, we wish to condition on to both the generator and discriminator. We show that this model can generate MNIST digits conditioned on class labels. We also illustrate how this model could be used to learn a multi-modal model, and provide preliminary examples of an application to image tagging in which we demonstrate how this approach can generate descriptive tags which are not part of training labels.
 
 ### 5.2 Generator and Critic
-Conditional GANs have information about the label, so both Discriminator and Generator are supervised. The Generator generates what you want him to generate. It can be seen as an extension of WGAN. Discriminator includes an embedding from number of classes $$num\_classes$$ to the image’s size squared $$(img\_size)^2$$. The labels are embedded in that layer and resized to $$img\_size×img\_size$$. As a result, the first CONV 2D layer has 3+1 channels. Generator also includes an embedding. The labels are embedded and unsqueezed twice producing an extra channel. As a result, the first CONV 2D layer has 3+1 channels.
+Conditional GANs have information about the label, so both Discriminator and Generator are supervised. The Generator generates what you want him to generate. It can be seen as an extension of WGAN. Discriminator includes an embedding from number of classes $num\_classes$ to the image’s size squared $(img\_size)^2$. The labels are embedded in that layer and resized to $img\_size×img\_size$. As a result, the first CONV 2D layer has 3+1 channels. Generator also includes an embedding. The labels are embedded and unsqueezed twice producing an extra channel. As a result, the first CONV 2D layer has 3+1 channels.
 
 ## 6. Pix2Pix
 <p align="center">
