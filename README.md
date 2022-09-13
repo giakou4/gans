@@ -257,7 +257,7 @@ Generator is a U-NET with skip connections (With skip connections: concatenation
 ### 6.3 Loss
 For loss, BCE is used for both Generator and Discriminator. More specifically, to train the Discriminator, the BCE loss among real images and fake images as they are produced are summed. The generator uses the BCE loss of fake images produced with a L1 additional term. As a result, the input feature map has double the size in each block of up layers so concatenation can take place. The objective of the Discriminator and Generator (loss function) as a result are:
 * Discriminator: $max [E(D(x)) - E(D(G(z)))]$
-* Generator: $max [ E(D(G(z))) ] + λ_1 \cdot L1$
+* Generator: $max [ E(D(G(z))) ] + λ_1 \cdot L1(x, D(z))($
 
 ## 7. CycleGAN
 <p align="center">
@@ -268,6 +268,58 @@ For loss, BCE is used for both Generator and Discriminator. More specifically, t
 Image-to-image translation is a class of vision and graphics problems where the goal is to learn the mapping between an input image and an output image using a training set of aligned image pairs. However, for many tasks, paired training data will not be available. We present an approach for learning to translate an image from a source domain X to a target domain Y in the absence of paired examples. Our goal is to learn a mapping G: X->Y such that the distribution of images from G(X) is indistinguishable from the distribution Y using an adversarial loss. Because this mapping is highly under-constrained, we couple it with an inverse mapping F:Y->X and introduce a cycle consistency loss to enforce F(G(X))->X (and vice versa). Qualitative results are presented on several tasks where paired training data does not exist, including collection style transfer, object transfiguration, season transfer, photo enhancement, etc. Quantitative comparisons against several prior methods demonstrate the superiority of our approach.
 
 ### 7.2 Models: Generator and Discriminator
+
+Discriminator of CycleGAN is similar to the Discriminator of Pix2Pix. The difference lies that the input is 1 image rather than 2, so no doubling of the input channels occurs. Moreover, the normalization is Instance Normalization and not Batch Normalization. Moreover, the output passes through a Sigmoid Function.
+
+<p align="center">
+    <em> Table 9: Discriminator of CycleGAN </em>
+</p>
+
+<div align="center">
+  
+|   |  **Name** |     **Layer**    | **Activation** | **Feature Map** |  **Size**  | **Kernel** | **Stride** | **Padding** |
+|---|:---------:|:----------------:|:--------------:|:---------------:|:----------:|:----------:|:----------:|:-----------:|
+|   |           |   INPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
+| 1 |           |      CONV 2D     |      ReLU      |                 | 64×256×256 |      7     |      1     |      3      |
+| 2 |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 3 |   D1-D2   |      CONV 2D     |      ReLU      |     128, 256    |   512×2×2  |      3     |      2     |      1      |
+|   |     ×7    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 4 | Res1-Res9 |      CONV 2D     |      ReLU      |    256 (all)    |            |      3     |      1     |      1      |
+|   |     ×9    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+|   |           |      CONV 2D     |                |                 |  256×64×64 |      3     |      1     |      1      |
+|   |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 5 |  UP1-UP2  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
+|   |     ×2    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 6 |           |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
+|   |           |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
+
+</div>
+
+For the Generator a ResNet like implementation is done. In the residual blocks, the output is $out=x+Net(x)$, where $Net$ represents both CONV 2D and INSTANCE NORM 2D of the residual block.
+
+<p align="center">
+    <em> Table 10: Generator of CycleGAN (ResNet) </em>
+</p>
+
+<div align="center">
+  
+|   |  **Name** |     **Layer**    | **Activation** | **Feature Map** |  **Size**  | **Kernel** | **Stride** | **Padding** |
+|---|:---------:|:----------------:|:--------------:|:---------------:|:----------:|:----------:|:----------:|:-----------:|
+|   |           |   INPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
+| 1 |           |      CONV 2D     |      ReLU      |                 | 64×256×256 |      7     |      1     |      3      |
+| 2 |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 3 |   D1-D2   |      CONV 2D     |      ReLU      |     128, 256    |   512×2×2  |      3     |      2     |      1      |
+|   |     ×7    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 4 | Res1-Res9 |      CONV 2D     |      ReLU      |    256 (all)    |            |      3     |      1     |      1      |
+|   |     ×9    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+|   |           |      CONV 2D     |                |                 |  256×64×64 |      3     |      1     |      1      |
+|   |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 5 |  UP1-UP2  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
+|   |     ×2    | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 6 |           |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
+|   |           |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
+
+</div>
 
 ### 7.3 Loss
 
@@ -280,6 +332,8 @@ Image-to-image translation is a class of vision and graphics problems where the 
 We describe a new training methodology for generative adversarial networks. The key idea is to grow both the generator and discriminator progressively: starting from a low resolution, we add new layers that model increasingly fine details as training progresses. This both speeds the training up and greatly stabilizes it, allowing us to produce images of unprecedented quality, e.g., CELEBA images at 10242. We also propose a simple way to increase the variation in generated images, and achieve a record inception score of 8:80 in unsupervised CIFAR10. Additionally, we describe several implementation details that are important for discouraging unhealthy competition between the generator and discriminator. Finally, we suggest a new metric for evaluating GAN results, both in terms of image quality and variation. As an additional contribution, we construct a higher-quality version of the CELEBA dataset.
 
 ### 8.2 Models: Generator and Discriminator
+
+
 
 ### 8.3 Loss
 
