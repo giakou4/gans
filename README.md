@@ -483,8 +483,8 @@ The architecture of Generator and Discriminator networks is as follows:
 
 ### 9.3 Loss
 The objective of the Discriminator and Generator are:
-* Discriminator: $max [E(C(x)) - E(C(G(z)))]$
-* Generator: $max [ E(C(G(z))) ]$ or $min[-E(C(G(z))]$
+* Discriminator: $max [ log(D(x)) + log( 1-D(G(z)) ) ]$
+* Generator: $min [ log(1-D(G(z)) ]$ or $max[ log(D(G(z)) ]$ 
 
 The loss of the Discriminator and Generator are:
 * Discriminator: $loss_D = BCE( D(res_h), 1-0.01 \cdot D(res_h) ) + BCE( D(G(res_l)), 0 )$
