@@ -482,6 +482,15 @@ The architecture of Generator and Discriminator networks is as follows:
 </div>
 
 ### 9.3 Loss
+The objective of the Discriminator and Generator are:
+* Discriminator: $max [E(C(x)) - E(C(G(z)))]$
+* Generator: $max [ E(C(G(z))) ]$ or $min[-E(C(G(z))]$
+
+The loss of the Discriminator and Generator are:
+* Discriminator: $loss_D = BCE( D(res_h), 1-0.01 \cdot D(res_h) ) + BCE( D(G(res_l)), 0 )$
+* Generator: $loss_G = loss_{adversarial} + loss_{VGG} = 0.001 \cdot BCE( D(G(res_l)), 1 ) + 0.006 \cdot VGG( G(res_l), res_h )$
+
+where $res_l$ is the low resolution image of size $3×24×24$ and $res_h$ is the high resolution image of size $3×96×96$.
 
 ## 10. ESRGAN
 <p align="center">
