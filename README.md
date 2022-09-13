@@ -208,6 +208,48 @@ Conditional GANs have information about the label, so both Discriminator and Gen
 We investigate conditional adversarial networks as a general-purpose solution to image-to-image translation problems. These networks not only learn the mapping from input image to output image, but also learn a loss function to train this mapping. This makes it possible to apply the same generic approach to problems that traditionally would require very different loss formulations. We demonstrate that this approach is effective at synthesizing photos from label maps, reconstructing objects from edge maps, and colorizing images, among other tasks. Indeed, since the release of the pix2pix software associated with this paper, a large number of internet users (many of them artists) have posted their own experiments with our system, further demonstrating its wide applicability and ease of adoption without the need for parameter tweaking. As a community, we no longer hand-engineer our mapping functions, and this work suggests we can achieve reasonable results without hand-engineering our loss functions either.
 
 ### 6.2 Models: Generator and Discriminator
+
+Discriminator has a simple architecture of a couple of CNN layers. It is a PatchGAN where the output is $N×N$. Each cell grid is responsible for a patch of the original image.
+
+<p align="center">
+    <em> Table 7: Discriminator of Pix2Pix </em>
+</p>
+
+<div align="center">
+  
+|   |        **Layer**       | **Activation** | **Feature Map** |   **Size**   | **Kernel** | **Stride** | **Padding** |
+|---|:----------------------:|:--------------:|:---------------:|:------------:|:----------:|------------|-------------|
+|   |    INPUT (2 IMAGES)    |                |                 | 3⋅ 2×256×256 |            |            |             |
+| 1 |         CONV 2D        |   Leaky ReLU   |        64       |  64×128×128  |      4     |      2     |      1      |
+| 2 |         CONV 2D        |   Leaky ReLU   |       128       |   128×64×64  |      4     |      2     |      1      |
+| 3 |      Batch NORM 2D     |                |                 |              |            |            |             |
+| 4 |         CONV 2D        |   Leaky ReLU   |       256       |   256×32×32  |      4     |      2     |      1      |
+| 5 |      Batch NORM 2D     |                |                 |              |            |            |             |
+| 6 |         CONV 2D        |   Leaky ReLU   |       512       |   512×31×31  |      4     |      2     |      1      |
+| 7 |      Batch NORM 2D     |                |                 |              |            |            |             |
+| 8 |         CONV 2D        |                | 1               | 1×30×30      |      4     |      2     |      1      |
+|   | OUTPUT (PROB. AS GRID) |                |                 |    1×30×30   |            |            |             |
+
+Generator is a U-NET with skip connections (With skip connections: concatenations of UP1 with D7, UP2 with D6, …, UP6 with D2, UP7 with D1, that is why feature maps are symmetrically). In the first part, the image is down-sampled to  $512×1×1$ and in the second part, the latter is up-sampled back to the original size of $3×256×256$ with skip connections symmetrical put between the output of down layers and up layers. As a result, the input feature map has double the size in each block of up layers so concatenation can take place.
+
+<p align="center">
+    <em> Table 8: Generator of Pix2Pix (U-NET architecture) </em>
+</p>
+
+<div align="center">
+  
+|   |   **Name**   |    **Layer**   | **Activation** |  **Feature Map** |  **Size**  | **Kernel** | **Stride** | **Padding** |
+|---|:------------:|:--------------:|:--------------:|:----------------:|:----------:|:----------:|:----------:|:-----------:|
+|   |              |  INPUT (IMAGE) |                |                  |  3×256×256 |            |            |             |
+| 1 |   _Initial_  |     CONV 2D    |   Leaky ReLU   |        64        | 64×128×128 |      4     |      2     |      1      |
+| 2 |    _D1-D7_   |     CONV 2D    |   Leaky ReLU   | 64, 128, 512 (5) |   512×2×2  |      4     |      2     |      1      |
+|   |      × 7     |  BATCH NORM 2D |                |                  |            |            |            |             |
+| 3 | _Bottleneck_ |     CONV 2D    |      ReLU      |        512       |   512×1×1  |      4     |      2     |      1      |
+| 4 |   _UP1-UP7_  |  CONV TRANS 2D |      ReLU      | 512 (5), 128, 64 | 64×128×128 |      4     |      2     |      1      |
+|   |      × 7     |     CONV 2D    |                |                  |            |            |            |             |
+| 5 |    _Final_   |  CONV TRANS 2D |      Tanh      |                  | 3×256× 256 |      4     |      2     |      1      |
+|   |              | OUTPUT (IMAGE) |                |                  |            |            |            |             |
+
 <p align="center">
   <img src="https://i.ibb.co/ChcTqGc/4-UNET.jpg" width="535" height="335">
 </p>
