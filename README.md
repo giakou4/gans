@@ -24,7 +24,6 @@ A simple Generator and Discriminator are as follows
 <p align="center">
     <em> Table 1: Discriminator of a Simple GAN </em>
 </p>
-<div align="center">
 
 <div align="center">
 
