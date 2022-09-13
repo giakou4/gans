@@ -30,10 +30,10 @@ A simple Generator and Discriminator are as follows
 
 |   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
 |---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT (FLATTEN IMAGE)     |                |                 |   1×784  |
+|   |   | INPUT     |                |                 |   1×784  |
 | 1 |   | LINEAR    |   Leaky ReLU   |       128       |   1×128  |
 | 2 |   | LINEAR    |     Sigmoid    |        1        |    1×1   |
-|   |   | OUTPUT (PROBABILITY)    |                |                 |     1    |
+|   |   | OUTPUT    |                |                 |     1    |
 
 </div>
 
@@ -45,10 +45,10 @@ A simple Generator and Discriminator are as follows
 
 |   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
 |---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT (NOISE)             |                |                 |   1×64   |
-| 1 |   | LINEAR                    |   Leaky ReLU   |       256       |   1×256  |
-| 2 |   | LINEAR                    |      Tanh      |       784       |   1×784  |
-|   |   | OUTPUT (FLATTEN IMAGE)    |                |                 |   1×784  |
+|   |   | INPUT     |                |                 |   1×64   |
+| 1 |   | LINEAR    |   Leaky ReLU   |       256       |   1×256  |
+| 2 |   | LINEAR    |      Tanh      |       784       |   1×784  |
+|   |   | OUTPUT    |                |                 |   1×784  |
 
 </div>
 
