@@ -582,7 +582,7 @@ The architecture of ESRGAN's Generator has two modifications:
   
 |   |      **Name**     |                **Layer**                | **Activation** | **Input Shape** |
 |---|:-----------------:|:---------------------------------------:|:--------------:|:---------------:|
-|   |                   |              INPUT (IMAGE)              |                |     3×96×96     |
+|   |                   |              INPUT (IMAGE)              |                |     3×24×24     |
 | 1 |     _Initial_     |                 CONV 2D                 |      PReLU     |                 |
 | 2 | _Residual Blocks_ | Each RRDB block contains x3 RDB blocks, |                |                 |
 |   |     _×23 RRDB_    |     each of which has 5x Conv Blocks    |                |                 |
