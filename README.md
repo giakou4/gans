@@ -230,7 +230,9 @@ Discriminator has a simple architecture of a couple of CNN layers. It is a Patch
 | 8 |         CONV 2D        |                | 1               | 1×30×30      |      4     |      2     |      1      |
 |   | OUTPUT (PROB. AS GRID) |                |                 |    1×30×30   |            |            |             |
 
-Generator is a U-NET with skip connections (With skip connections: concatenations of UP1 with D7, UP2 with D6, …, UP6 with D2, UP7 with D1, that is why feature maps are symmetrically). In the first part, the image is down-sampled to  $512×1×1$ and in the second part, the latter is up-sampled back to the original size of $3×256×256$ with skip connections symmetrical put between the output of down layers and up layers. As a result, the input feature map has double the size in each block of up layers so concatenation can take place.
+</div>
+
+Generator is a U-NET with skip connections (With skip connections: concatenations of UP1 with D7, UP2 with D6, …, UP6 with D2, UP7 with D1, that is why feature maps are symmetrically). In the first part, the image is down-sampled to  $512×1×1$ and in the second part, the latter is up-sampled back to the original size of $3×256×256$ with skip connections symmetrical put between the output of down layers and up layers. 
 
 <p align="center">
     <em> Table 8: Generator of Pix2Pix (U-NET architecture) </em>
@@ -250,12 +252,12 @@ Generator is a U-NET with skip connections (With skip connections: concatenation
 | 5 |    _Final_   |  CONV TRANS 2D |      Tanh      |                  | 3×256× 256 |      4     |      2     |      1      |
 |   |              | OUTPUT (IMAGE) |                |                  |            |            |            |             |
 
-<p align="center">
-  <img src="https://i.ibb.co/ChcTqGc/4-UNET.jpg" width="535" height="335">
-</p>
+</div>
 
 ### 6.3 Loss
-
+For loss, BCE is used for both Generator and Discriminator. More specifically, to train the Discriminator, the BCE loss among real images and fake images as they are produced are summed. The generator uses the BCE loss of fake images produced with a L1 additional term. As a result, the input feature map has double the size in each block of up layers so concatenation can take place. The objective of the Discriminator and Generator (loss function) as a result are:
+* Discriminator: $max [E(D(x)) - E(D(G(z)))]$
+* Generator: $max [ E(D(G(z))) ] + λ_1 \cdot L1$
 
 ## 7. CycleGAN
 <p align="center">
