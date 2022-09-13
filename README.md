@@ -1,7 +1,5 @@
 # Generative Adversarial Networks (GANs)
 
-Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
-
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![made-with-python](https://img.shields.io/badge/Made%20with-PyTorch-red)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/giakou4/gans/LICENSE)
