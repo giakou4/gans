@@ -352,8 +352,8 @@ Discriminator of CycleGAN is similar to the Discriminator of Pix2Pix. The differ
 |   |             | INSTANCE NORM 2D |                |                 |            |            |            |             |
 | 5 |  _UP1-UP2_  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
 |   |     ×2      | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 6 |             |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
-|   |             |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
+| 6 |             |      CONV 2D     |      Tanh      |        3        |  3×256×256 |            |            |             |
+|   |             |  OUTPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
 
 </div>
 
@@ -378,8 +378,8 @@ For the Generator a ResNet like implementation is done. In the residual blocks, 
 |   |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
 | 5 |  UP1-UP2  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
 |   |     ×2    | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 6 |           |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
-|   |           |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
+| 6 |           |      CONV 2D     |      Tanh      |        3        |  3×256×256 |            |            |             |
+|   |           |  OUTPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
 
 </div>
 
