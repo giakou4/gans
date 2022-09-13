@@ -14,6 +14,7 @@ The following GANs are implemented in [PyTorch](https://pytorch.org/):
 7. SRGAN
 8. ESRGAN
 
+## Folder Structure
 
 The structure of code is as follows:  
 ```bash
@@ -30,6 +31,8 @@ gan/
 ├── utils.py 
 └── README.md
 ```
+
+## Code Organization
 
 Each _model.py_ has the two following class implementations: 
 ```python 
@@ -73,6 +76,5 @@ class MyImageFolder(torch.utils.data.Dataset):
     """ My image dataset """
     pass
 ```
-
 
 It the _utils.py_, we define two basic functions: ```save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```load_checkpoint(checkpoint_file, model, optimizer, lr, device)``` among other essential for training.
