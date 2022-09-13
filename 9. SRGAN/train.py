@@ -1,0 +1,114 @@
+import argparse
+import torch
+from torch import nn
+from torch import optim
+from torch.utils.data import DataLoader
+from PIL import Image
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from tqdm import tqdm
+from model import Generator, Discriminator
+from dataset import MyImageFolder
+from utils import load_checkpoint, save_checkpoint, plot_examples
+from loss import VGGLoss
+torch.backends.cudnn.benchmark = True
+
+
+def parse_opt():
+    """ Arguement Parser """
+    parser = argparse.ArgumentParser(description='Hyperparameters for training')
+    parser.add_argument('--device', type=str, default='cuda', help='torch device')
+    parser.add_argument('--num-epochs', type=int, default=100, help='number of epochs')
+    parser.add_argument('--learning-rate', type=float, default=1e-4, help='base learning rate')
+    parser.add_argument('--batch-size', type=int, default=16, help='batch sizes')
+    parser.add_argument('--num-workers', type=int, default=4, help='number of workers')
+    parser.add_argument('--high-res-size', type=int, default=96, help='images high resolution')
+    parser.add_argument('--low-res-size', type=int, default=96 // 4, help='images low resolution')  
+    parser.add_argument('--load-model', action='store_true', help='load pre-trained model')
+    parser.add_argument('--save-model', action='store_true', help='save model after each train epoch')
+    parser.add_argument('--checkpoint-gen', type=str, default='./checkpoints/gen.pth.tar', help='path to save generators checkpoint')
+    parser.add_argument('--checkpoint-disc', type=str, default='./checkpoints/disc.pth.tar', help='path to save discriminator checkpoint')
+    parser.add_argument('--logs', type=str, default='./logs/', help='tensorflow logs directory')
+    parser.add_argument('--dataset-dir', type=str, default='./data/', help='training dataset directory')
+    opt = parser.parse_args()
+    return opt
+
+
+def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, mse, bce, vgg, epoch, num_epochs, config, test_transform):
+    """ One forward pass of Discriminator and Generator """
+    
+    loop = tqdm(loader, leave=True)
+    loop.set_description(f"Epoch {epoch}/{num_epochs}")
+    
+    for batch_idx, (low_res, high_res) in enumerate(loop):
+        high_res = high_res.to(config.device)
+        low_res = low_res.to(config.device)
+        
+        ### Train Discriminator: max log(disc(x)) + log(1 - disc(gen(z)))
+        fake = gen(low_res)
+        disc_real = disc(high_res)
+        disc_fake = disc(fake.detach())
+        
+        disc_loss_real = bce(disc_real, torch.ones_like(disc_real) - 0.1 * torch.rand_like(disc_real))
+        disc_loss_fake = bce(disc_fake, torch.zeros_like(disc_fake))
+        loss_disc = disc_loss_fake + disc_loss_real
+
+        opt_disc.zero_grad()
+        loss_disc.backward()
+        opt_disc.step()
+
+        # Train Generator: min log(1 - disc(gen(z))) <-> max log(disc(gen(z))
+        disc_fake = disc(fake)
+        # l2_loss = mse(fake, high_res)
+        adversarial_loss = 1e-3 * bce(disc_fake, torch.ones_like(disc_fake))
+        loss_for_vgg = 0.006 * vgg(fake, high_res)
+        gen_loss = loss_for_vgg + adversarial_loss
+
+        opt_gen.zero_grad()
+        gen_loss.backward()
+        opt_gen.step()
+
+        if batch_idx % 100 == 0 and batch_idx > 0:
+            plot_examples("test_images/", gen, "saved_images", config.device, test_transform)
+            
+        loop.set_postfix(gen_loss=gen_loss.item(), loss_disc=loss_disc.item())
+
+
+def main(config):
+    """ Training of Discriminator and Generator """
+    
+    t_tensor = ToTensorV2()
+    t_norm = A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    highres_transform = A.Compose([t_norm, t_tensor])
+    lowres_transform = A.Compose([A.Resize(width=config.low_res_size, height=config.low_res_size, interpolation=Image.BICUBIC), t_norm, t_tensor])
+    both_transforms = A.Compose([A.RandomCrop(width=config.high_res_size, height=config.high_res_size), A.HorizontalFlip(p=0.5), A.RandomRotate90(p=0.5)])
+    test_transform = A.Compose([t_norm, t_tensor])
+    
+    dataset = MyImageFolder(config.dataset_dir, both_transforms, highres_transform, lowres_transform)
+    loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, pin_memory=True, num_workers=config.num_workers)
+    
+    gen = Generator(img_channels=3).to(config.device)
+    disc = Discriminator(img_channels=3).to(config.device)
+    
+    opt_gen  = optim.Adam(gen.parameters(), lr=config.learning_rate, betas=(0.9, 0.999))
+    opt_disc = optim.Adam(disc.parameters(), lr=config.learning_rate, betas=(0.9, 0.999))
+    
+    mse = nn.MSELoss()
+    bce = nn.BCEWithLogitsLoss()
+    vgg = VGGLoss(device=config.device)
+
+    if config.load_model:
+        load_checkpoint(config.checkpoint_gen,  gen, opt_gen, config.learning_rate, config.device)
+        load_checkpoint(config.checkpoint_disc, disc, opt_disc, config.learning_rate, config.device)
+
+    for epoch in range(config.num_epochs):
+        train_one_epoch(loader, disc, gen, opt_gen, opt_disc, mse, bce, vgg, epoch, config.num_epochs, config, test_transform)
+
+        if config.save_model:
+            save_checkpoint(gen, opt_gen,  filename=config.checkpoint_gen)
+            save_checkpoint(disc, opt_disc, filename=config.checkpoint_disc)
+
+
+if __name__ == "__main__":
+    config = parse_opt()
+    main(config)
