@@ -603,3 +603,27 @@ The loss for Generator is $loss_G=loss_{L1}+loss_{VGG}+loss_{adversarial}$ where
 * $loss_{L1} = 0.01 \cdot L1 = 0.01 \cdot L1[G(res_l), res_h]$
 * $loss_{VGG} = VGG[ G(res_l), res_h)  ] = MSE[ (G(res_l), res_h ]$ of VGG-19
 * $loss_{adversarial} = -0.005E[ D(G(res_l)) ]$
+
+## 11. Conculsion
+
+Table 16 summarizes the input and output of Discriminator and Generator of each GAN, along with the purpose of the GAN.
+
+<p align="center">
+    <em> Table 16: GAN's purpose to different problems </em>
+</p>
+
+<div align="center">
+    
+| **GAN**             | Purpose                    | **Input Discriminator** | **Output Discriminator** | **Input Generator** | **Output Generator** |
+|---------------------|----------------------------|-------------------------|--------------------------|---------------------|----------------------|
+| **DCGAN**           | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **WGAN**            | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **WGAN-GP**         | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **Conditional GAN** | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **Pix2Pix**         | image-to-image translation | 2 images (3x256x256)    | probability (1x30x30)    | image (3x256x256)   | image (3x256x256)    |
+| **CycleGAN**        | image-to-image translation | image (3x256x256)       | image (3x256x256)        | image (3x256x256)   | image (3x256x256)    |
+| **ProGAN**          | image generation           | image (3x1024x1024)     | probability (1x1)        | noise (512x1x1)     | image (3x1024x1024   |
+| **SRGAN**           | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
+| **ESRGAN**          | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
+    
+</div>
