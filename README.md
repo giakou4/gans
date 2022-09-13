@@ -6,6 +6,17 @@ Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
 [![made-with-python](https://img.shields.io/badge/Made%20with-PyTorch-red)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/giakou4/gans/LICENSE)
 
+The following GANs are implemented in [PyTorch](https://pytorch.org/):
+1. DCGAN
+2. WGAN and WGAN-GP
+3. Conditional GAN
+4. Pix2Pix
+5. CycleGAN
+6. ProGAN
+7. SRGAN
+8. ESRGAN
+
+
 The structure of code is as follows:  
 ```bash
 gan/  
