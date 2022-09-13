@@ -22,7 +22,11 @@ gan/
 └── README.md
 ```
 
-Each _model.py_ has the two following class implementations: ```python class Discriminator(nn.Module)``` and ```class Generator(nn.Module)```. Each _train.py_ has an arguement parser ```def parse_opt()```, a function for single epoch training ```train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, num_epochs, **kwargs)``` and the main function ```def main(config)```. It the _utils.py_, we define two basic functions: ```def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```def load_checkpoint(checkpoint_file, model, optimizer, lr, device)```.
+Each _model.py_ has the two following class implementations: 
+```python 
+class Discriminator(nn.Module)
+``` 
+and ```class Generator(nn.Module)```. Each _train.py_ has an arguement parser ```def parse_opt()```, a function for single epoch training ```train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, num_epochs, **kwargs)``` and the main function ```def main(config)```. It the _utils.py_, we define two basic functions: ```def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```def load_checkpoint(checkpoint_file, model, optimizer, lr, device)```.
 
 ## 1. Simple GAN
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
