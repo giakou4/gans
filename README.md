@@ -20,17 +20,17 @@ The following GANs are implemented in [PyTorch](https://pytorch.org/):
 
 <div align="center">
     
-| **GAN**      | Purpose                    | **Input Discriminator** | **Output Discriminator** | **Input Generator** | **Output Generator** |
-|--------------|----------------------------|-------------------------|--------------------------|---------------------|----------------------|
-| **DCGAN**    | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
-| **WGAN**     | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
-| **WGAN-GP**  | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
-| **C. GAN**   | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
-| **Pix2Pix**  | image-to-image translation | 2 images (3x256x256)    | probability (1x30x30)    | image (3x256x256)   | image (3x256x256)    |
-| **CycleGAN** | image-to-image translation | image (3x256x256)       | image (3x256x256)        | image (3x256x256)   | image (3x256x256)    |
-| **ProGAN**   | image generation           | image (3x1024x1024)     | probability (1x1)        | noise (512x1x1)     | image (3x1024x1024   |
-| **SRGAN**    | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
-| **ESRGAN**   | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
+| **GAN**             | Purpose                    | **Input Discriminator** | **Output Discriminator** | **Input Generator** | **Output Generator** |
+|---------------------|----------------------------|-------------------------|--------------------------|---------------------|----------------------|
+| **DCGAN**           | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **WGAN**            | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **WGAN-GP**         | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **Conditional GAN** | image generation           | image (3x64x64)         | probability (1x1)        | noise (100x1x1)     | image (3x64x64)      |
+| **Pix2Pix**         | image-to-image translation | 2 images (3x256x256)    | probability (1x30x30)    | image (3x256x256)   | image (3x256x256)    |
+| **CycleGAN**        | image-to-image translation | image (3x256x256)       | image (3x256x256)        | image (3x256x256)   | image (3x256x256)    |
+| **ProGAN**          | image generation           | image (3x1024x1024)     | probability (1x1)        | noise (512x1x1)     | image (3x1024x1024   |
+| **SRGAN**           | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
+| **ESRGAN**          | super resolution           | image (3x96x96)         | probability (1x1)        | image (3x24x24)     | image (3x96x96)      |
     
 </div>
 
