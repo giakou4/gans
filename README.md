@@ -277,21 +277,21 @@ Discriminator of CycleGAN is similar to the Discriminator of Pix2Pix. The differ
 
 <div align="center">
   
-|   |  **Name** |     **Layer**    | **Activation** | **Feature Map** |  **Size**  | **Kernel** | **Stride** | **Padding** |
-|---|:---------:|:----------------:|:--------------:|:---------------:|:----------:|:----------:|:----------:|:-----------:|
-|   |           |   INPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
-| 1 |           |      CONV 2D     |      ReLU      |                 | 64×256×256 |      7     |      1     |      3      |
-| 2 |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 3 |   D1-D2   |      CONV 2D     |      ReLU      |     128, 256    |   512×2×2  |      3     |      2     |      1      |
-|   |     ×7    | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 4 | Res1-Res9 |      CONV 2D     |      ReLU      |    256 (all)    |            |      3     |      1     |      1      |
-|   |     ×9    | INSTANCE NORM 2D |                |                 |            |            |            |             |
-|   |           |      CONV 2D     |                |                 |  256×64×64 |      3     |      1     |      1      |
-|   |           | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 5 |  UP1-UP2  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
-|   |     ×2    | INSTANCE NORM 2D |                |                 |            |            |            |             |
-| 6 |           |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
-|   |           |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
+|   |   **Name**  |     **Layer**    | **Activation** | **Feature Map** |  **Size**  | **Kernel** | **Stride** | **Padding** |
+|---|:-----------:|:----------------:|:--------------:|:---------------:|:----------:|:----------:|:----------:|:-----------:|
+|   |             |   INPUT (IMAGE)  |                |                 |  3×256×256 |            |            |             |
+| 1 |             |      CONV 2D     |      ReLU      |                 | 64×256×256 |      7     |      1     |      3      |
+| 2 |             | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 3 |   _D1-D2_   |      CONV 2D     |      ReLU      |     128, 256    |   512×2×2  |      3     |      2     |      1      |
+|   |     ×7      | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 4 | _Res1-Res9_ |      CONV 2D     |      ReLU      |    256 (all)    |            |      3     |      1     |      1      |
+|   |     ×9      | INSTANCE NORM 2D |                |                 |            |            |            |             |
+|   |             |      CONV 2D     |                |                 |  256×64×64 |      3     |      1     |      1      |
+|   |             | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 5 |  _UP1-UP2_  |   CONV TRANS 2D  |      ReLU      |     128, 64     | 64×256×256 |      3     |      2     |      1      |
+|   |     ×2      | INSTANCE NORM 2D |                |                 |            |            |            |             |
+| 6 |             |      CONV 2D     |      Tanh      |        3        |            |            |            |             |
+|   |             |  OUTPUT (IMAGE)  |                |                 |            |            |            |             |
 
 </div>
 
