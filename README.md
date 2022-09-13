@@ -334,7 +334,7 @@ The losses are 2 adversarial and 1 cycle:
 
 ## 8. ProGAN 
 <p align="center">
-  <img src="https://i.ibb.co/2vZp68R/6-ProGAN.png" width="200" height="350">
+  <img src="https://i.ibb.co/LSH12Jk/Screenshot-1.png" width="500" height="250">
 </p>
 
 ### 8.1 Abstract (2018)
