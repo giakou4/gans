@@ -119,7 +119,7 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
 
 <p align="center">
-    <em> Table 5: Critic of WCGAN </em>
+    <em> Table 5: Critic of WGAN </em>
 </p>
 
 <div align="center">
@@ -140,7 +140,7 @@ Models now includes Batch Normalization. Discriminator does not have Sigmoid fun
 </div>
 
 <p align="center">
-    <em> Table 6: Generator of WCGAN </em>
+    <em> Table 6: Generator of WGAN </em>
 </p>
 
 <div align="center">
@@ -416,9 +416,9 @@ Both Generator and Discriminator are hard to implement.
 </div>
 
 ### 8.4 Loss
-The loss for Discriminator is $Loss_C = -C(real,a-C(fake,a)+λ_GP\cdot GP+0.001 \cdot C(real,a)^2$. 
+The loss for Discriminator is $loss_D = -D(x, a-D(G(z), a) + λ_GP \cdot GP+0.001 \cdot D(x,a)^2$. 
 
-The loss for Generator is $Loss_G = -C(fake,a)$
+The loss for Generator is $loss_G = -D(G(z),a)$
 
 ## 9. SRGAN
 <p align="center">
@@ -487,8 +487,8 @@ The objective of the Discriminator and Generator are:
 * Generator: $min [ log(1-D(G(z)) ]$ or $max[ log(D(G(z)) ]$ 
 
 The loss of the Discriminator and Generator are:
-* Discriminator: $loss_D = BCE( D(res_h), 1-0.01 \cdot D(res_h) ) + BCE( D(G(res_l)), 0 )$
-* Generator: $loss_G = loss_{adversarial} + loss_{VGG} = 0.001 \cdot BCE( D(G(res_l)), 1 ) + 0.006 \cdot VGG( G(res_l), res_h )$
+* Discriminator: $loss_D = BCE[ D(res_h), 1-0.01 \cdot D(res_h) ] + BCE[ D(G(res_l)), 0 ]$
+* Generator: $loss_G = loss_{adversarial} + loss_{VGG} = 0.001 \cdot BCE[ D(G(res_l)), 1 )]+ 0.006 \cdot VGG[ G(res_l), res_h ]$
 
 where $res_l$ is the low resolution image of size $3×24×24$ and $res_h$ is the high resolution image of size $3×96×96$.
 
@@ -538,6 +538,6 @@ The architecture of ESRGAN's Generator has two modifications:
 The loss for Discriminator is $loss_D = -E[ D(res_h) ] - E[ D(G(res_l)) ] + λ_GP \cdot GP$
 
 The loss for Generator is $loss_G=loss_{L1}+loss_{VGG}+loss_{adversarial}$ where
-* $loss_{L1} = 0.01 \cdot L1 = 0.01 \cdot L1(G(res_l), res_h)$
-* $loss_{VGG} = VGG( G(res_l), res_h)  ) = MSE( (G(res_l), res_h )$ of VGG-19
+* $loss_{L1} = 0.01 \cdot L1 = 0.01 \cdot L1[G(res_l), res_h]$
+* $loss_{VGG} = VGG[ G(res_l), res_h)  ] = MSE[ (G(res_l), res_h ]$ of VGG-19
 * $loss_{adversarial} = -0.005E[ D(G(res_l)) ]$
