@@ -24,16 +24,16 @@ gan/
 
 Each _model.py_ has the two following class implementations: 
 ```python 
-class Discriminator(nn.Module):
+class Discriminator(torch.nn.Module):
     """ Discriminator of XXX paper """
-    def __init__(self, img_ch=3):
+    def __init__(self, img_channels=3):
         pass
     def forward(self, x)
         return x
 
-class Generator(nn.Module):
+class Generator(torch.nn.Module):
     """ Generator of XXX paper """
-    def __init__(self, img_ch=3, z_dim=512):
+    def __init__(self, img_channels=3, noise_dim=512):
         pass
     def forward(self, x)
         return x
@@ -61,13 +61,13 @@ if __name__ == "__main__":
     main()
 ```
 
-In the _dataset.py_ we define the
+In the _dataset.py_ we define, unless PyTorchs ```ImageFolder``` is fine, the
 ```python
-class MyImageFolder(Dataset):
+class MyImageFolder(torch.utils.data.Dataset):
     """ My image dataset """
     pass
 ```
-unless PyTorchs ```ImageFolder``` is fine.
+
 
 It the _utils.py_, we define two basic functions: ```save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```load_checkpoint(checkpoint_file, model, optimizer, lr, device)``` among other essential for training.
 
