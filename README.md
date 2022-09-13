@@ -24,9 +24,77 @@ gan/
 
 Each _model.py_ has the two following class implementations: 
 ```python 
-class Discriminator(nn.Module)
+class Discriminator(nn.Module):
+    """ Discriminator of XXX paper
+    input  : N x img_ch x 64 x 64 (image)
+    output : N x 1 x 1 (probability)
+    """
+    def __init__(self, img_ch=3):
+        """ 
+        Parameters
+        ----------
+        img_ch : number of channels of image generated
+        """
+        pass
+        
+    def forward(self, x)
+        return x
 ``` 
-and ```class Generator(nn.Module)```. Each _train.py_ has an arguement parser ```def parse_opt()```, a function for single epoch training ```train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, num_epochs, **kwargs)``` and the main function ```def main(config)```. It the _utils.py_, we define two basic functions: ```def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```def load_checkpoint(checkpoint_file, model, optimizer, lr, device)```.
+and 
+```python 
+class Generator(nn.Module):
+    """ Generator of XXX paper
+    input  : N x z_dim x 1 x 1 (noise)
+    output : N x img_ch x 64 x 64 (image)
+    """
+    def __init__(self, img_ch=3, z_dim=512):
+        """ 
+        Parameters
+        ----------
+        img_ch  : number of channels of image generated
+        z_dim   : noise dimension of input
+        """
+        pass
+        
+    def forward(self, x)
+        return x
+```
+Each _train.py_ has an arguement parser 
+```python
+def parse_opt()
+```
+a function for single epoch training 
+```python
+def train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, g_scaler, d_scaler, writer, tb_step, epoch, num_epochs, **kwargs):
+  pass
+``` 
+and the main function 
+```python
+def main(config):
+  pass
+  
+if __name__ == "__main__":
+    main()
+```
+
+It the _utils.py_, we define two basic functions: 
+```python
+def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+  pass
+``` 
+and 
+```python
+def load_checkpoint(checkpoint_file, model, optimizer, lr, device):
+  pass
+```
+
+In the _dataset.py_ we define the
+```python
+class MyImageFolder(Dataset):
+    """ My image dataset """
+    pass
+```
+unless PyTorchs ```ImageFolder``` is fine.
 
 ## 1. Simple GAN
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
