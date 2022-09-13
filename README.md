@@ -51,6 +51,8 @@ A simple Generator and Discriminator are as follows
 |   |   | OUTPUT (FLATTEN IMAGE)    |                |                 |   1×784  |
 
 </div>
+  
+end
 
 ## 2. DCGAN
 <p align="center">
