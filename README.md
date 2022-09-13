@@ -18,6 +18,41 @@ GANs consist of 2 networks playing an adversarial game against each other: a Gen
 
 </div>
 
+### Generator and Discriminator
+A simple Generator and Discriminator are as follows
+
+<p align="center">
+    <em> Table 1: Discriminator of a Simple GAN </em>
+</p>
+<div align="center">
+
+<div align="center">
+
+|   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
+|---|---|:---------:|:--------------:|:---------------:|:--------:|
+|   |   | INPUT     |                |                 |   1×784  |
+| 1 |   | LINEAR    |   Leaky ReLU   |       128       |   1×128  |
+| 2 |   | LINEAR    |     Sigmoid    |        1        |    1×1   |
+|   |   | OUTPUT    |                |                 |     1    |
+
+</div>
+
+<p align="center">
+    <em> Table 2: Generator of a Simple GAN </em>
+</p>
+<div align="center">
+
+<div align="center">
+
+|   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
+|---|---|:---------:|:--------------:|:---------------:|:--------:|
+|   |   | INPUT     |                |                 |   1×64   |
+| 1 |   | LINEAR    |   Leaky ReLU   |       256       |   1×256  |
+| 2 |   | LINEAR    |      Tanh      |       784       |   1×784  |
+|   |   | OUTPUT    |                |                 |   1×784  |
+
+</div>
+
 ## 2. DCGAN
 <p align="center">
   <img src="https://i.ibb.co/F5WKZxX/1-Simple-GAN.png" width="300" height="200">
@@ -30,7 +65,7 @@ In recent years, supervised learning with convolutional networks (CNNs) has seen
 Models include Convolutional Neural Networks (CNN) since images are used. Discriminator uses Convolutional layers while Generator uses Transpose Convolutional layers. The output of Discriminator passes through a Sigmoid activation function since it represents probability (fake or real), while the output of Generators though a Tanh, to assure the output is an image and is within [-1,1].
 
 <p align="center">
-    <em> Table 1: Discriminator of DCGAN</em>
+    <em> Table 3: Discriminator of DCGAN</em>
 </p>
 <div align="center">
   
@@ -47,7 +82,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 </div>
 
 <p align="center">
-    <em> Table 2: Generator of DCGAN </em>
+    <em> Table 4: Generator of DCGAN </em>
 </p>
 
 <div align="center">
@@ -55,19 +90,19 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |            |          Layer         |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |      INPUT (NOISE)     |                   |             |  100×1× 1 |        |        |         |
-|      1     |      CONV TRANSPOSE 2D |     Leaky ReLU    |     1024    |  1024×4×4 |    4   |    1   |    0    |
-|     2      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     512     |  512×8×8  |    4   |    1   |    0    |
-|     3      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     256     | 256×16×16 |    4   |    1   |    0    |
-|     4      |    CONV TRANSPOSE 2D   |     Leaky ReLU    |     128     | 128×32×32 |    4   |    1   |    0    |
-|     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    1   |    0    |
+|     1      |    CONV TRANSPOSE 2D   |        ReLU       |     1024    |  1024×4×4 |    4   |    1   |    0    |
+|     2      |    CONV TRANSPOSE 2D   |        ReLU       |     512     |  512×8×8  |    4   |    2   |    0    |
+|     3      |    CONV TRANSPOSE 2D   |        ReLU       |     256     | 256×16×16 |    4   |    2   |    0    |
+|     4      |    CONV TRANSPOSE 2D   |        ReLU       |     128     | 128×32×32 |    4   |    2   |    0    |
+|     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    2   |    0    |
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
 
 </div>
 
 ### 2.3 Loss
 The objective of the Discriminator and Generator (loss function) are:
-* Discriminator: $max [ E(log(D(x)+log(1-D(G(z))) ]$
-* Generator: $min[E(log(1-D(G(z))))]$
+* Discriminator: $max [E(log(D(x)+log(1-D(G(z)))]$
+* Generator: $min[E(log(1-D(G(z))))]$ or $max[log(D(G(z)))]$
 
 where they both can be expressed as
 $$min_{G}max_{D}V(D,G)=E[log(D(x)] + E[log(1-D(G(z))]$$
@@ -85,46 +120,45 @@ We introduce a new algorithm named WGAN, an alternative to traditional GAN train
 Models now includes Batch Normalization. Discriminator does not have Sigmoid function, as a result it is called Critic.
 
 <p align="center">
-    <em> Table 3: Critic of WCGAN </em>
+    <em> Table 5: Critic of WCGAN </em>
 </p>
 
 <div align="center">
   
-|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
-|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
-|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
-| 1 | B1 | CONV TRANSPOSE 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
-| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 3 | B2 | CONV TRANSPOSE 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
-| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 5 | B3 | CONV TRANSPOSE 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
-| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 7 | B4 | CONV TRANSPOSE 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
-| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 9 |    | CONV TRANSPOSE 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
-|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+|   |     **Layer**    | **Activation** | **Feature Map** |  **Size** | **Kernel** | **Stride** | **Padding** |
+|---|:----------------:|:--------------:|:---------------:|:---------:|:----------:|------------|-------------|
+|   |   INPUT (IMAGE)  |                |                 |  3×64×64  |            |            |             |
+| 1 |      CONV 2D     |   Leaky ReLU   |        64       |  64×32×32 |      4     |      2     |      1      |
+| 2 |      CONV 2D     |   Leaky ReLU   |       128       | 128×16×16 |      4     |      2     |      1      |
+| 3 | INSTANCE NORM 2D |                |                 |           |            |            |             |
+| 4 |      CONV 2D     |   Leaky ReLU   |       256       |  256×8×8  |      4     |      2     |      1      |
+| 5 | INSTANCE NORM 2D |                |                 |           |            |            |             |
+| 6 |      CONV 2D     |   Leaky ReLU   |       512       |  512×4×4  |      4     |      2     |      1      |
+| 7 | INSTANCE NORM 2D |                |                 |           |            |            |             |
+| 8 |      CONV 2D     |                |        1        |   1×1×1   |      4     |      2     |      0      |
+|   |  OUTPUT (PROB.)  |                |                 |     1     |            |            |             |
 
 </div>
 
 <p align="center">
-    <em> Table 4: Generator of WCGAN </em>
+    <em> Table 6: Generator of WCGAN </em>
 </p>
 
 <div align="center">
   
-|   |    |         Layer         | Activation | Feature Map |    Size   | Kernel | Stride | Padding |
-|---|----|:---------------------:|:----------:|:-----------:|:---------:|:------:|:------:|:-------:|
-|   |    | INPUT (NOISE)         |            |             |  100×1×1  |        |        |         |
-| 1 | B1 | CONV TRANS 2D     | Leaky ReLU |      64     |  1024×4×4 |    4   |    1   |    0    |
-| 2 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 3 | B2 | CONV TRANS 2D     | Leaky ReLU |     128     |  512×8×8  |    4   |    1   |    0    |
-| 4 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 5 | B3 | CONV TRANS 2D     | Leaky ReLU |     256     | 256×16×16 |    4   |    1   |    0    |
-| 6 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 7 | B4 | CONV TRANS 2D     | Leaky ReLU |     512     | 128×32×32 |    4   |    1   |    0    |
-| 8 |    | BATCH NORM 2D         |            |             |           |        |        |         |
-| 9 |    | CONV TRANS 2D     | Tanh       |             |  3×64×64  |    4   |    1   |    0    |
-|   |    | OUTPUT (IMAGE)        |            |             |  3×64×64  |        |        |         |
+|   |    **Layer**   | **Activation** | **Feature Map** |  **Size** | **Kernel** | **Stride** | **Padding** |
+|---|:--------------:|:--------------:|:---------------:|:---------:|:----------:|------------|-------------|
+|   |  INPUT (NOISE) |                |                 |  100×1×1  |            |            |             |
+| 1 |  CONV TRANS 2D |      ReLU      |       1024      |  1024×4×4 |            |            |             |
+| 2 |  BATCH NORM 2D |                |                 |           |            |            |             |
+| 3 |  CONV TRANS 2D |      ReLU      |       512       |  512×8×8  |            |            |             |
+| 4 |  BATCH NORM 2D |                |                 |           |            |            |             |
+| 5 |  CONV TRANS 2D |      ReLU      |       256       | 256×16×16 |            |            |             |
+| 6 |  BATCH NORM 2D |                |                 |           |            |            |             |
+| 7 |  CONV TRANS 2D |      ReLU      |       128       | 128×32×32 |            |            |             |
+| 8 |  BATCH NORM 2D |                |                 |           |            |            |             |
+| 9 |  CONV TRANS 2D |      Tanh      |        3        |  3×64×64  |            |            |             |
+|   | OUTPUT (IMAGE) |                |                 |     1     |            |            |             |
 
 </div>
 
