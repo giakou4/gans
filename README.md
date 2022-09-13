@@ -431,6 +431,56 @@ largely unsolved: how do we recover the finer texture details when we super-reso
 
 ### 9.2 Models: Generator and Discriminator
 
+The architecture of Generator and Discriminator networks is as follows:
+
+<p align="center">
+  <img src="https://i.ibb.co/fFs7KkS/Picture1.png" width="300" height="200">
+</p>
+
+<p align="center">
+    <em> Table 13: Discriminator of SRGAN </em>
+</p>
+
+<div align="center">
+  
+|   |   **Name**   |     **Layer**    | **Activation** |  **Input Shape**  | **Kernel** | **Stride** | **Padding** |
+|---|:------------:|:----------------:|:--------------:|:-----------------:|:----------:|:----------:|:-----------:|
+|   |              |   INPUT (IMAGE)  |                |      3×96×96      |            |            |             |
+| 1 |   _Blocks_   |      CONV 2D     |   Leaky ReLU   | based on features |      3     |      1     |      1      |
+|   |      ×8      |    BATCH NORM    |                |                   |            |            |             |
+| 2 | _Classifier_ | ADAPTIVE POOL 2D |                |      512×6×6      |      3     |      1     |      1      |
+|   |              |      FLATTEN     |                |       18.432      |            |            |             |
+|   |              |      LINEAR      |   Leaky ReLU   |       1.024       |            |            |             |
+|   |              |      LINEAR      |                |         1         |            |            |             |
+|   |              |  OUTPUT (PROB.)  |                |         1         |            |            |             |
+
+</div>
+
+<p align="center">
+    <em> Table 14: Generator of SRGAN </em>
+</p>
+
+<div align="center">
+  
+|   |   **Name**   |    **Layer**   | **Activation** | **Input Shape** | **Kernel** | **Stride** | **Padding** |
+|---|:------------:|:--------------:|:--------------:|:---------------:|:----------:|:----------:|:-----------:|
+|   |              |  INPUT (IMAGE) |                |     3×24×24     |            |            |             |
+| 1 |   _Initial_  |     CONV 2D    |      PReLU     |     64×24×24    |      9     |      1     |      4      |
+| 2 |  _Residual_  |     CONV 2D    |      PReLU     |     64×24×24    |      3     |      1     |      1      |
+|   |    _Block_   |   BATCH NORM   |                |                 |            |            |             |
+|   |      ×16     |     CONV 2D    |      PReLU     |     64×24×24    |      3     |      1     |      1      |
+|   |              |   BATCH NORM   |                |                 |            |            |             |
+| 3 | _Conv Block_ |     CONV 2D    |                |     64×24×24    |      3     |      1     |      1      |
+| 4 |              |   BATCH NORM   |                |                 |            |            |             |
+| 5 |     _Up_     |     CONV 2D    |      PReLU     |     64×48×48    |      3     |      1     |      1      |
+|   |   _Samples_  |  PIXEL SHUFFLE |                |                 |            |            |             |
+|   |      ×2      |     CONV 2D    |      PReLU     |     64×96×96    |      3     |      1     |      1      |
+|   |              |  PIXEL SHUFFLE |                |                 |            |            |             |
+| 6 |    _Final_   |     CONV 2D    |      Tanh      |     3×96×96     |      9     |      1     |      4      |
+|   |              | OUTPUT (IMAGE) |                |     3×96×96     |            |            |             |
+
+</div>
+
 ### 9.3 Loss
 
 ## 10. ESRGAN
@@ -443,4 +493,42 @@ Abstract. The Super-Resolution Generative Adversarial Network (SRGAN) is a semin
 
 ### 10.2 Models: Generator and Discriminator
 
+The Discriminator of ESRGAN is exactly the same as SRGAN.
+
+The architecture of ESRGAN's Generator has two modifications: 
+* Remove all Batch Normalization layers from SRGAN
+* Replace original block with the proposed Residual-in-Residual Dense Block (RRDB)
+
+<p align="center">
+  <img src="https://i.ibb.co/72ZgvNF/Picture2.png" width="300" height="200">
+</p>
+
+<p align="center">
+    <em> Table 15: Generator of ESRGAN </em>
+</p>
+
+<div align="center">
+  
+|   |      **Name**     |                **Layer**                | **Activation** | **Input Shape** |
+|---|:-----------------:|:---------------------------------------:|:--------------:|:---------------:|
+|   |                   |              INPUT (IMAGE)              |                |     3×96×96     |
+| 1 |     _Initial_     |                 CONV 2D                 |      PReLU     |                 |
+| 2 | _Residual Blocks_ | Each RRDB block contains x3 RDB blocks, |                |                 |
+|   |     _×23 RRDB_    |     each of which has 5x Conv Blocks    |                |                 |
+| 3 |       _Conv_      |                 CONV 2D                 |                |                 |
+| 4 |    _Up Samples_   |                 UPSAMPLE                |                |                 |
+|   |        _×2_       |                 CONV 2D                 |                |                 |
+| 5 |      _Final_      |                 CONV 2D                 |   Leaky ReLU   |                 |
+| 6 |      _Final_      |                 CONV 2D                 |                |                 |
+|   |                   |              OUTPUT (PROB.)             |                |     3×96×96     |
+
+</div>
+
 ### 10.3 Loss
+
+The loss for Discriminator is $loss_D = -E[ D(res_h) ] - E[ D(G(res_l)) ] + λ_GP \cdot GP$
+
+The loss for Generator is $loss_G=loss_{L1}+loss_{VGG}+loss_{adversarial}$ where
+* $loss_{L1} = 0.01 \cdot L1 = 0.01 \cdot L1(G(res_l), res_h)$
+* $loss_{VGG} = VGG( G(res_l), res_h)  ) = MSE( (G(res_l), res_h )$ of VGG-19
+* $loss_{adversarial} = -0.005E[ D(G(res_l)) ]$
