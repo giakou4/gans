@@ -509,7 +509,7 @@ The architecture of ESRGAN's Generator has two modifications:
 * Replace original block with the proposed Residual-in-Residual Dense Block (RRDB)
 
 <p align="center">
-  <img src="https://i.ibb.co/72ZgvNF/Picture2.png" width="800" height="500">
+  <img src="https://i.ibb.co/72ZgvNF/Picture2.png" width="800" height="380">
 </p>
 
 <p align="center">
