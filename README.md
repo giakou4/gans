@@ -169,15 +169,22 @@ $$max(E_{x \to P_r} [D(x)]-E_{x \to P_g}[D(x)])$$
 
 Discriminator wants to maximize the above equation, while Generator was to minimize. Converge when it’s close to 0. Hence, loss means something!
 
+The objective of the Discriminator and Generator (loss function) as a result are:
+* Critic: $max [E(C(x)) - E(C(G(z)))]$
+* Generator: $max [ E(C(G(z))) ]$ or $min[-E(C(G(z))]$
+
 ## 4. WGAN-GP (with Gradient Penalty)
 <p align="center">
   <img src="https://i.ibb.co/BBtZ2Wc/2-WGAN.png" width="300" height="200">
 </p>
 
-A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. WGAN and WGAN-GP use the exact same models for Generator and Critic. The only difference lies is the loss back propagated.
+A new paper introduced the WGAN with Gradient Penalty (GP), where in the loss function of Critic, a penalty is added. 
 
 ### 4.1 Abstract (2017)
 Generative Adversarial Networks (GANs) are powerful generative models, but suffer from training instability. The recently proposedWasserstein GAN (WGAN) makes progress toward stable training of GANs, but sometimes can still generate only poor samples or fail to converge. We find that these problems are often due to the use of weight clipping in WGAN to enforce a Lipschitz constraint on the critic, which can lead to undesired behavior. We propose an alternative to clipping weights: penalize the norm of gradient of the critic with respect to its input. Our proposed method performs better than standard WGAN and enables stable training of a wide variety of GAN architectures with almost no hyperparameter tuning, including 101-layer ResNets and language models with continuous generators. We also achieve high quality generations on CIFAR-10 and LSUN bedrooms.
+
+### 3.2 Generator, Critic and Loss
+WGAN and WGAN-GP use the exact same models for Generator and Critic. The only difference lies is the loss back propagated, where a penalty with a weight is added $λ_{GP} \cdot GP$.
 
 ## 5. Conditional GAN
 <p align="center">
