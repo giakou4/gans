@@ -28,12 +28,12 @@ A simple Generator and Discriminator are as follows
 
 <div align="center">
 
-|   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
-|---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT (FLATTEN IMAGE)     |                |                 |   1×784  |
-| 1 |   | LINEAR    |   Leaky ReLU   |       128       |   1×128  |
-| 2 |   | LINEAR    |     Sigmoid    |        1        |    1×1   |
-|   |   | OUTPUT (RPOBABILITY)    |                |                 |     1    |
+|   |       **Layer**       | **Activation** | **Feature Map** | **Size** |
+|---|:---------------------:|:--------------:|:---------------:|:--------:|
+|   | INPUT (FLATTEN IMAGE) |                |                 |   1×784  |
+| 1 |         LINEAR        |   Leaky ReLU   |       128       |   1×128  |
+| 2 |         LINEAR        |      Tanh      |        1        |    1×1   |
+|   |  OUTPUT (RPOBABILITY) |                |                 |     1    |
 
 </div>
 
@@ -43,16 +43,14 @@ A simple Generator and Discriminator are as follows
 
 <div align="center">
 
-|   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
-|---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT (NOISE)    |                |                 |   1×64   |
-| 1 |   | LINEAR    |   Leaky ReLU   |       256       |   1×256  |
-| 2 |   | LINEAR    |      Tanh      |       784       |   1×784  |
-|   |   | OUTPUT (FLATTEN IMAGE)    |                |                 |   1×784  |
+|   |       **Layer**       | **Activation** | **Feature Map** | **Size** |
+|---|:---------------------:|:--------------:|:---------------:|:--------:|
+|   | INPUT (FLATTEN IMAGE) |                |                 |   1×64   |
+| 1 |         LINEAR        |   Leaky ReLU   |       256       |   1×256  |
+| 2 |         LINEAR        |      Tanh      |       784       |   1×784  |
+|   |  OUTPUT (RPOBABILITY) |                |                 |   1×784  |
 
 </div>
-  
-end
 
 ## 2. DCGAN
 <p align="center">
@@ -100,8 +98,6 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
 
 </div>
-
-End
 
 ### 2.3 Loss
 The objective of the Discriminator and Generator (loss function) are:
