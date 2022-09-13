@@ -99,6 +99,8 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 
 </div>
 
+End
+
 ### 2.3 Loss
 The objective of the Discriminator and Generator (loss function) are:
 * Discriminator: $max [E(log(D(x)+log(1-D(G(z)))]$
