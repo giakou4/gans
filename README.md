@@ -72,7 +72,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |   INPUT (IMAGE)  |                   |             |  3x64x64  |        |        |         |
-|      1     |      CONV 2D     |     Leaky ReLU    |      64     |  64×32×32 |    4   |    2   |    1    |
+|     1      |      CONV 2D     |     Leaky ReLU    |      64     |  64×32×32 |    4   |    2   |    1    |
 |     2      |      CONV 2D     |     Leaky ReLU    |     128     | 128×16×16 |    4   |    2   |    1    |
 |     3      |      CONV 2D     |     Leaky ReLU    |     256     |  256×8×8  |    4   |    2   |    1    |
 |     4      |      CONV 2D     |     Leaky ReLU    |     512     |  512×4×4  |    4   |    2   |    1    |
