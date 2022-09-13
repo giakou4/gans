@@ -30,6 +30,7 @@ The following GANs are implemented in [PyTorch](https://pytorch.org/):
 | **ProGAN**          | image generation           | image (3x1024x1024)         | probability (1x1)        | noise (512x1x1)             | image (3x1024x1024   |
 | **SRGAN**           | super resolution           | image (3x96x96)             | probability (1x1)        | image (3x24x24)             | image (3x96x96)      |
 | **ESRGAN**          | super resolution           | image (3x96x96)             | probability (1x1)        | image (3x24x24)             | image (3x96x96)      |
+
 </div>
 
 ## Folder Structure
