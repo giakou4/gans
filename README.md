@@ -25,43 +25,28 @@ gan/
 Each _model.py_ has the two following class implementations: 
 ```python 
 class Discriminator(nn.Module):
-    """ Discriminator of XXX paper
-    input  : N x img_ch x 64 x 64 (image)
-    output : N x 1 x 1 (probability)
-    """
+    """ Discriminator of XXX paper """
     def __init__(self, img_ch=3):
-        """ 
-        Parameters
-        ----------
-        img_ch : number of channels of image generated
-        """
         pass
-        
     def forward(self, x)
         return x
 ``` 
 and 
 ```python 
 class Generator(nn.Module):
-    """ Generator of XXX paper
-    input  : N x z_dim x 1 x 1 (noise)
-    output : N x img_ch x 64 x 64 (image)
-    """
+    """ Generator of XXX paper """
     def __init__(self, img_ch=3, z_dim=512):
-        """ 
-        Parameters
-        ----------
-        img_ch  : number of channels of image generated
-        z_dim   : noise dimension of input
-        """
         pass
-        
     def forward(self, x)
         return x
 ```
 Each _train.py_ has an arguement parser 
 ```python
-def parse_opt()
+def parse_opt():
+    parser = argparse.ArgumentParser()
+    # ...
+    opt = parser.parse_args()
+    return opt
 ```
 a function for single epoch training 
 ```python
