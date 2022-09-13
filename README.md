@@ -68,7 +68,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 </p>
 
 <div align="center">
-  
+
 |            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |   INPUT (IMAGE)  |                   |             |  3x64x64  |        |        |         |
@@ -86,7 +86,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 </p>
 
 <div align="center">
-  
+
 |            |          Layer         |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
 |------------|:----------------------:|:-----------------:|:-----------:|:---------:|:------:|:------:|:-------:|
 |            |      INPUT (NOISE)     |                   |             |  100×1× 1 |        |        |         |
