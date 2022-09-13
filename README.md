@@ -330,7 +330,7 @@ Given that we have:
 The losses are 2 adversarial and 1 cycle:
 * $min$  $max [L_{GAN} (G, D_Y, X, Y) ]$ where the latter is an MSE loss $L_{GAN} = E[log(D_Y(y)] + E[ log(1-D_Y(G(x))) ]$
 * $min$ $max [L_{GAN} (G, D_X, X, Y) $
-* $ L_{cycle}=E[ F(G(x)) - x ] + E[ G(F(x))-y ] $ where the latter is L1 loss
+* $L_{cycle}=E[ F(G(x)) - x ] + E[ G(F(x))-y ]$ where the latter is L1 loss
 
 ## 8. ProGAN 
 <p align="center">
