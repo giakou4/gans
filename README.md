@@ -30,10 +30,10 @@ A simple Generator and Discriminator are as follows
 
 |   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
 |---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT     |                |                 |   1×784  |
+|   |   | INPUT (FLATTEN IMAGE)     |                |                 |   1×784  |
 | 1 |   | LINEAR    |   Leaky ReLU   |       128       |   1×128  |
 | 2 |   | LINEAR    |     Sigmoid    |        1        |    1×1   |
-|   |   | OUTPUT    |                |                 |     1    |
+|   |   | OUTPUT (RPOBABILITY)    |                |                 |     1    |
 
 </div>
 
@@ -45,10 +45,10 @@ A simple Generator and Discriminator are as follows
 
 |   |   | **Layer** | **Activation** | **Feature Map** | **Size** |
 |---|---|:---------:|:--------------:|:---------------:|:--------:|
-|   |   | INPUT     |                |                 |   1×64   |
+|   |   | INPUT (NOISE)    |                |                 |   1×64   |
 | 1 |   | LINEAR    |   Leaky ReLU   |       256       |   1×256  |
 | 2 |   | LINEAR    |      Tanh      |       784       |   1×784  |
-|   |   | OUTPUT    |                |                 |   1×784  |
+|   |   | OUTPUT (FLATTEN IMAGE)    |                |                 |   1×784  |
 
 </div>
 
@@ -66,6 +66,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 <p align="center">
     <em> Table 3: Discriminator of DCGAN</em>
 </p>
+
 <div align="center">
   
 |            |       Layer      |     Activation    | Feature Map |    Size   | Kernel | Stride | Padding |
