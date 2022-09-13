@@ -15,7 +15,7 @@ The following GANs are implemented in [PyTorch](https://pytorch.org/):
 8. ESRGAN
 
 <p align="center">
-    <em> Table: GAN architectures </em>
+    <em> Table: GAN purpose to different problems </em>
 </p>
 
 <div align="center">
