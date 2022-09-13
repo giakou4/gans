@@ -7,18 +7,19 @@ Implementation of GAN architectures in [PyTorch](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/giakou4/gans/LICENSE)
 
 The structure of code is as follows:  
+```bash
 gan/  
-|-- train.py  
-|-- model.py  
-|-- dataset.py  
-|-- utils.py  
-|-- logs  
-|-- data/  
-|....|-- disc.pth.tar  
-|....|-- gen.pth.tar  
-|-- data/  
-|....|-- MNIST  
-
+|---- train.py  
+|---- model.py  
+|---- dataset.py  
+|---- utils.py  
+|---- logs  
+|---- data/  
+|      |---- disc.pth.tar  
+|      |---- gen.pth.tar  
+|---- data/  
+|      |---- MNIST  
+```
 Each _model.py_ has the two following class implementations: ```class Discriminator(nn.Module)``` and ```class Generator(nn.Module)```. Each _train.py_ has an arguement parser ```def parse_opt()```, a function for single epoch training ```train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, num_epochs, **kwargs)``` and the main function ```def main(config)```. It the _utils.py_, we define two basic functions: ```def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```def load_checkpoint(checkpoint_file, model, optimizer, lr, device)```.
 
 ## 1. Simple GAN
