@@ -322,6 +322,15 @@ For the Generator a ResNet like implementation is done. In the residual blocks, 
 </div>
 
 ### 7.3 Loss
+Given that we have:
+* Two mappings (Generators): $G:X→Y $and F$:Y→X$
+* Two Discriminators: $D_X$ and $D_Y$ where $D_X$ aims to discriminate between ${x}$ and ${F(y)}$ and $D_Y$ between ${y}$ and ${G(x)}$  
+* A Generator $G$ that tries to generate images $G(x)$ that look similar to images from domain $Y$
+
+The losses are 2 adversarial and 1 cycle:
+* $min max [L_{GAN} (G, D_Y, X, Y) ]$ where the latter is an MSE loss $L_{GAN} = E[log(D_Y(y)] + E[ log(1-D_Y(G(x))) ]
+* $min max [L_{GAN} (G, D_X, X, Y) $
+* $ L_{cycle}=E[ F(G(x)) - x ] + E[ G(F(x))-y ] $ where the latter is L1 loss
 
 ## 8. ProGAN 
 <p align="center">
