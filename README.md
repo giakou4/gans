@@ -39,21 +39,17 @@ class Generator(torch.nn.Module):
         return x
 ```
 
-Each _train.py_ has an arguement parser 
+Each _train.py_ has an arguement parser, a function for single epoch training and the main function 
 ```python
 def parse_opt():
     parser = argparse.ArgumentParser()
     # ...
     opt = parser.parse_args()
     return opt
-```
-a function for single epoch training 
-```python
+
 def train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, g_scaler, d_scaler, writer, tb_step, epoch, num_epochs, **kwargs):
   pass
-``` 
-and the main function 
-```python
+
 def main(config):
   pass
   
