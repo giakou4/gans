@@ -61,17 +61,6 @@ if __name__ == "__main__":
     main()
 ```
 
-It the _utils.py_, we define two basic functions: 
-```python
-def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
-  pass
-``` 
-and 
-```python
-def load_checkpoint(checkpoint_file, model, optimizer, lr, device):
-  pass
-```
-
 In the _dataset.py_ we define the
 ```python
 class MyImageFolder(Dataset):
@@ -79,6 +68,8 @@ class MyImageFolder(Dataset):
     pass
 ```
 unless PyTorchs ```ImageFolder``` is fine.
+
+It the _utils.py_, we define two basic functions: ```save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```load_checkpoint(checkpoint_file, model, optimizer, lr, device)``` among other essential for training.
 
 ## 1. Simple GAN
 GANs consist of 2 networks playing an adversarial game against each other: a Generator (counterfeiter) and a Discriminator (detective). In the end, the Generator generates indistinguishable fake images from real ones and the Discriminator is forced to guess with probability 1/2. Both Generator and Discriminator are randomly initialized and simultaneously trained. 
