@@ -348,9 +348,77 @@ We describe a new training methodology for generative adversarial networks. The 
 
 ### 8.3 Models: Generator and Discriminator
 
+Both Generator and Discriminator are hard to implement.
+
+<p align="center">
+    <em> Table 11: Discriminator of ProGAN </em>
+</p>
+
+<div align="center">
+  
+|    |    **Layer**   | **Activation** |   **Size**   | **Kernel** | **Stride** | **Padding** |
+|----|:--------------:|:--------------:|:------------:|:----------:|:----------:|:-----------:|
+|    |  INPUT (IMAGE) |                |  3×1024×1024 |            |            |             |
+| 1  |     CONV 2D    |  Leaky ReLU    | 16×1024×1024 |      4     |      0     |      0      |
+| 2  |   Conv Block   |  Leaky ReLU    | 32×1024×1024 |      3     |      1     |      1      |
+| 3  |      DOWN      |                |  32×512×512  |            |            |             |
+| 4  |   Conv Block   |  Leaky ReLU    |  64×512×512  |      3     |      1     |      1      |
+| 5  |      DOWN      |                |  64×256×256  |            |            |             |
+| 6  |   Conv Block   |  Leaky ReLU    |  128×256×256 |      3     |      1     |      1      |
+| 7  |      DOWN      |                |  128×128×128 |            |            |             |
+| 8  |   Conv Block   |  Leaky ReLU    |  256×128×128 |      3     |      1     |      1      |
+| 9  |      DOWN      |                |   256×64×64  |            |            |             |
+| 10 |   Conv Block   |  Leaky ReLU    |   512×64×64  |      3     |      1     |      1      |
+| 11 |      DOWN      |                |   512×32×32  |            |            |             |
+| 12 |   Conv Block   |  Leaky ReLU    |   512×32×32  |      3     |      1     |      1      |
+| 13 |      DOWN      |                |   512×16×16  |            |            |             |
+| 14 |   Conv Block   |  Leaky ReLU    |   512×16×16  |      3     |      1     |      1      |
+| 15 |      DOWN      |                |    512×8×8   |            |            |             |
+| 16 |   Conv Block   |  Leaky ReLU    |    512×8×8   |      3     |      1     |      1      |
+| 17 |      DOWN      |                |    512×4×4   |            |            |             |
+| 19 |   Conv Block   |  Leaky ReLU    |    512×4×4   |      3     |      1     |      1      |
+| 19 |     CONV 2D    |                |    512×1×1   |      4     |      4     |      0      |
+| 20 |       FC       |     Linear     |     1×1×1    |            |            |             |
+|    | OUTPUT (PROB.) |                |       1      |            |            |             |
+
+</div>
+
+<p align="center">
+    <em> Table 12: Generator of ProGAN </em>
+</p>
+
+<div align="center">
+  
+|    |    **Layer**   | **Activation** |    **Size**   | **Kernel** | **Stride** | **Padding** |
+|----|:--------------:|:--------------:|:-------------:|:----------:|:----------:|:-----------:|
+|    |  INPUT (IMAGE) |                |    512×1×1    |            |            |             |
+| 1  |     CONV 2D    |   Leaky ReLU   |    512×4×4    |      4     |      4     |      0      |
+| 2  |   Conv Block   |   Leaky ReLU   |    512×4×4    |      3     |      1     |      1      |
+| 3  |    UPSAMPLE    |                |    512×8×8    |            |            |             |
+| 4  |   Conv Block   |   Leaky ReLU   |    512×4×4    |      3     |      1     |      1      |
+| 5  |    UPSAMPLE    |                |   512×16×16   |            |            |             |
+| 6  |   Conv Block   |   Leaky ReLU   |   512×16×16   |      3     |      1     |      1      |
+| 7  |    UPSAMPLE    |                |   512×32×32   |            |            |             |
+| 8  |   Conv Block   |   Leaky ReLU   |   512×32×32   |      3     |      1     |      1      |
+| 9  |    UPSAMPLE    |                |   512×64×64   |            |            |             |
+| 10 |   Conv Block   |   Leaky ReLU   |   512×64×64   |      3     |      1     |      1      |
+| 11 |    UPSAMPLE    |                |  512×128×128  |            |            |             |
+| 12 |   Conv Block   |   Leaky ReLU   |  512×128×128  |      3     |      1     |      1      |
+| 13 |    UPSAMPLE    |                |  512×256×256  |            |            |             |
+| 14 |   Conv Block   |   Leaky ReLU   |  512×256×256  |      3     |      1     |      1      |
+| 15 |    UPSAMPLE    |                |  512×512×512  |            |            |             |
+| 16 |   Conv Block   |   Leaky ReLU   |  512×512×512  |      3     |      1     |      1      |
+| 17 |    UPSAMPLE    |                | 512×1024×1024 |            |            |             |
+| 19 |   Conv Block   |   Leaky ReLU   | 512×1024×1024 |      3     |      1     |      1      |
+| 19 |   WS CONV 2D   |     Linear     |  3×1024×1024  |            |            |             |
+|    | OUTPUT (PROB.) |                |  3×1024×1024  |            |            |             |
+
+</div>
+
 ### 8.4 Loss
-The loss for Discriminator is $Loss_C = -C(real,a-C(fake,a)+λ_GP\cdot GP+0.001 \cdot C(real,a)^2$
-The loss for Generator is $Loss_G = -C(fake,a)
+The loss for Discriminator is $Loss_C = -C(real,a-C(fake,a)+λ_GP\cdot GP+0.001 \cdot C(real,a)^2$. 
+
+The loss for Generator is $Loss_G = -C(fake,a)$
 
 ## 9. SRGAN
 <p align="center">
