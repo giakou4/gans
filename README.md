@@ -30,9 +30,7 @@ class Discriminator(nn.Module):
         pass
     def forward(self, x)
         return x
-``` 
-and 
-```python 
+
 class Generator(nn.Module):
     """ Generator of XXX paper """
     def __init__(self, img_ch=3, z_dim=512):
@@ -40,6 +38,7 @@ class Generator(nn.Module):
     def forward(self, x)
         return x
 ```
+
 Each _train.py_ has an arguement parser 
 ```python
 def parse_opt():
