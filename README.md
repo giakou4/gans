@@ -340,11 +340,17 @@ The losses are 2 adversarial and 1 cycle:
 ### 8.1 Abstract (2018)
 We describe a new training methodology for generative adversarial networks. The key idea is to grow both the generator and discriminator progressively: starting from a low resolution, we add new layers that model increasingly fine details as training progresses. This both speeds the training up and greatly stabilizes it, allowing us to produce images of unprecedented quality, e.g., CELEBA images at 10242. We also propose a simple way to increase the variation in generated images, and achieve a record inception score of 8:80 in unsupervised CIFAR10. Additionally, we describe several implementation details that are important for discouraging unhealthy competition between the generator and discriminator. Finally, we suggest a new metric for evaluating GAN results, both in terms of image quality and variation. As an additional contribution, we construct a higher-quality version of the CELEBA dataset.
 
-### 8.2 Models: Generator and Discriminator
+### 8.2 Innovations
+* Grow Generator and Discriminator progressively
+* Mini Batch std       
+* Pixel Norm: Normalize each pixel value $a_(x,y)$ by the mean of pixel squared: $b_(x,y)=a_(x,y)/E[a_(x,y)]$
+* Equalize Learning Rate $W_f=W_i \cdot f(k, c)$ (He-initialization)
 
+### 8.3 Models: Generator and Discriminator
 
-
-### 8.3 Loss
+### 8.4 Loss
+The loss for Discriminator is $Loss_C = -C(real,a-C(fake,a)+λ_GP\cdot GP+0.001 \cdot C(real,a)^2$
+The loss for Generator is $Loss_G = -C(fake,a)
 
 ## 9. SRGAN
 <p align="center">
