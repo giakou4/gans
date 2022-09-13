@@ -54,7 +54,8 @@ def main(config):
   pass
   
 if __name__ == "__main__":
-    main()
+    config = prase_opt()
+    main(config)
 ```
 
 In the _dataset.py_ we define, unless PyTorchs ```ImageFolder``` is fine, the
