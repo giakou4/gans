@@ -46,7 +46,7 @@ Models include Convolutional Neural Networks (CNN) since images are used. Discri
 |     3      |    CONV TRANSPOSE 2D   |        ReLU       |     256     | 256×16×16 |    4   |    2   |    0    |
 |     4      |    CONV TRANSPOSE 2D   |        ReLU       |     128     | 128×32×32 |    4   |    2   |    0    |
 |     5      |    CONV TRANSPOSE 2D   |        Tanh       |      3      |  3×64×64  |    4   |    2   |    0    |
-|            |     OUTPUT (IMAGE)     |                   |             |     1     |        |        |         |
+|            |     OUTPUT (IMAGE)     |                   |             |  3x64x64  |        |        |         |
 
 </div>
 
