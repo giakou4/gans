@@ -28,6 +28,7 @@ gan/
 ├── train.py  
 ├── model.py 
 ├── dataset.py 
+├── loss.py 
 ├── utils.py 
 └── README.md
 ```
@@ -74,6 +75,17 @@ In the _dataset.py_ we define, unless PyTorchs ```ImageFolder``` is fine, the
 ```python
 class MyImageFolder(torch.utils.data.Dataset):
     """ My image dataset """
+    pass
+```
+
+Finally, we centralize the loss functions of Discriminator and Generator  ub tge _loss.py_
+```python
+def loss_fn_disc():
+    """ Discriminator Loss Function """
+    pass
+    
+def loss_fn_gen():
+    """ Generator Loss Function """
     pass
 ```
 
