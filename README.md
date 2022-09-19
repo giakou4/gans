@@ -52,6 +52,24 @@ class Generator(torch.nn.Module):
         return x
 ```
 
+In the _dataset.py_ we define, unless PyTorchs ```ImageFolder``` is fine, the class
+```python
+class MyImageFolder(torch.utils.data.Dataset):
+    """ My image dataset """
+    pass
+```
+
+We centralize the loss functions of Discriminator and Generator in the _loss.py_
+```python
+def loss_fn_disc():
+    """ Discriminator Loss Function """
+    pass
+    
+def loss_fn_gen():
+    """ Generator Loss Function """
+    pass
+```
+
 Each _train.py_ has an arguement parser, a function for single epoch training and the main function 
 ```python
 def parse_opt():
@@ -71,22 +89,4 @@ if __name__ == "__main__":
     main(config)
 ```
 
-In the _dataset.py_ we define, unless PyTorchs ```ImageFolder``` is fine, the
-```python
-class MyImageFolder(torch.utils.data.Dataset):
-    """ My image dataset """
-    pass
-```
-
-Finally, we centralize the loss functions of Discriminator and Generator  ub tge _loss.py_
-```python
-def loss_fn_disc():
-    """ Discriminator Loss Function """
-    pass
-    
-def loss_fn_gen():
-    """ Generator Loss Function """
-    pass
-```
-
-It the _utils.py_, we define two basic functions: ```save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```load_checkpoint(checkpoint_file, model, optimizer, lr, device)``` among other essential for training.
+Finally, in the _utils.py_, we define two basic functions: ```save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar")``` and ```load_checkpoint(checkpoint_file, model, optimizer, lr, device)``` among other essential for training.
