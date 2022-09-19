@@ -6,7 +6,18 @@ import torchvision
 
 
 def plot_to_tensorboard(writer, loss_critic, loss_gen, real, fake, tensorboard_step):
-    """ Print losses occasionally and print to tensorboard """
+    """ 
+    Print losses occasionally and print to tensorboard
+    
+    Parameters
+    ----------
+    writer           : writer to use
+    loss_critic      : critic's current loss
+    loss_gen         : generator's current loss
+    real             : real image
+    fake             : generated image
+    tensorboard_step : tensorboard step to use
+    """
     writer.add_scalar("Loss Critic", loss_critic, global_step=tensorboard_step)
 
     with torch.no_grad():
@@ -18,6 +29,18 @@ def plot_to_tensorboard(writer, loss_critic, loss_gen, real, fake, tensorboard_s
 
 
 def gradient_penalty(critic, real, fake, alpha, train_step, device="cpu"):
+    """
+    Altered Gradient Penalty for ProGANs
+    
+    Parameters
+    ----------
+    critic     : model critic to calculate gradient penalty
+    real       : real image
+    fake       : fake image generated
+    alpha      : alpha of epoch
+    train_step : train step of epoch
+    device     : device to calculate gradient penalty
+    """
     batch_size, channels, height, width = real.shape
     beta = torch.rand((batch_size, 1, 1, 1)).repeat(1, channels, height, width).to(device)
     interpolated_images = real * beta + fake.detach() * (1 - beta)
@@ -41,6 +64,15 @@ def gradient_penalty(critic, real, fake, alpha, train_step, device="cpu"):
 
 
 def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
+    """ 
+    Saves checkpoint of current model
+    
+    Parameters
+    ----------
+    model     : model, either generator or discriminator
+    optimizer : save model's optimzier
+    filename  : path of model to be saved
+    """
     print("=> Saving checkpoint")
     checkpoint = {
         "state_dict": model.state_dict(),
@@ -50,6 +82,17 @@ def save_checkpoint(model, optimizer, filename="my_checkpoint.pth.tar"):
 
 
 def load_checkpoint(checkpoint_file, model, optimizer, lr, device):
+    """ 
+    Loads checkpoint of model
+    
+    Parameters
+    ----------
+    checkpoint_file : load model in specific path
+    model           : model, either generator or discriminator
+    optimizer       : load model's optimzier
+    lr              : set optimizer's learning rate
+    device          : device where model is stored
+    """
     print("=> Loading checkpoint")
     checkpoint = torch.load(checkpoint_file, map_location=device)
     model.load_state_dict(checkpoint["state_dict"])
@@ -58,6 +101,13 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr, device):
         param_group["lr"] = lr
 
 def seed_everything(seed=42):
+    """
+    Seeds all python libraries
+    
+    Parameters
+    ----------
+    seed : seed to use
+    """
     os.environ['PYTHONHASHSEED'] = str(seed)
     random.seed(seed)
     np.random.seed(seed)
