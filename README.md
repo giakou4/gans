@@ -25,6 +25,8 @@ gan/
 │   └── gen.pth.tar  
 ├── data
 │   ├── MNIST
+│   ├── DIV2K_train_HR
+│   └── ...
 ├── train.py  
 ├── model.py 
 ├── dataset.py 
