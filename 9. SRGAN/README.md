@@ -17,7 +17,7 @@ largely unsolved: how do we recover the finer texture details when we super-reso
 The architecture of Generator and Discriminator networks is as follows:
 
 <p align="center">
-  <img src="https://i.ibb.co/fFs7KkS/Picture1.png" width="800" height="500">
+  <img src="https://i.ibb.co/fFs7KkS/Picture1.png" width="300" height="200">
 </p>
 
 <p align="center">

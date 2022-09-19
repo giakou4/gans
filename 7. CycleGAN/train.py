@@ -11,6 +11,7 @@ from discriminator import Discriminator
 from generator import Generator
 from dataset import HorseZebraDataset
 from utils import save_checkpoint, load_checkpoint
+from loss import loss_fn_disc, loss_fn_gen
 
 
 def parse_opt():
@@ -36,11 +37,9 @@ def parse_opt():
     return opt
 
 
-def train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, L1, MSE, d_scaler, g_scaler, epoch, num_epochs, config):
+def train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, d_scaler, g_scaler, epoch, num_epochs, config):
     """ One forward pass of Discriminators and Generators """
-    
-    H_reals, H_fakes = 0, 0
-    
+        
     loop = tqdm(loader, leave=True)
     loop.set_description(f"Epoch {epoch}/{num_epochs}")
 
@@ -50,71 +49,29 @@ def train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, L1,
 
         # Train Discriminators H and Z
         with torch.cuda.amp.autocast():
-            # Discriminator Horse
-            fake_horse = gen_H(zebra)
-            
+            fake_horse = gen_H(zebra)   
             D_H_real = disc_H(horse)
-            D_H_fake = disc_H(fake_horse.detach())
-            
-            H_reals += D_H_real.mean().item()
-            H_fakes += D_H_fake.mean().item()
-            
-            D_H_real_loss = MSE(D_H_real, torch.ones_like(D_H_real))
-            D_H_fake_loss = MSE(D_H_fake, torch.zeros_like(D_H_fake))
-            D_H_loss = D_H_real_loss + D_H_fake_loss
-
-            # Discriminator Zebra
+            D_H_fake = disc_H(fake_horse)
             fake_zebra = gen_Z(horse)
-            
             D_Z_real = disc_Z(zebra)
             D_Z_fake = disc_Z(fake_zebra.detach())
-            
-            D_Z_real_loss = MSE(D_Z_real, torch.ones_like(D_Z_real))
-            D_Z_fake_loss = MSE(D_Z_fake, torch.zeros_like(D_Z_fake))
-            D_Z_loss = D_Z_real_loss + D_Z_fake_loss
-
-            # put it togethor
-            D_loss = (D_H_loss + D_Z_loss)/2
-
+            loss_disc = loss_fn_disc(D_H_real, D_H_fake, D_Z_real, D_Z_fake)
         opt_disc.zero_grad()
-        d_scaler.scale(D_loss).backward()
+        d_scaler.scale(loss_disc).backward(retain_graph=True)
         d_scaler.step(opt_disc)
         d_scaler.update()
 
         # Train Generators H and Z
         with torch.cuda.amp.autocast():
-            
             D_H_fake = disc_H(fake_horse)
             D_Z_fake = disc_Z(fake_zebra)
-            
-            # Adversarial Loss for both Generators
-            loss_G_H = MSE(D_H_fake, torch.ones_like(D_H_fake))
-            loss_G_Z = MSE(D_Z_fake, torch.ones_like(D_Z_fake))
-
-            # Cycle Loss (remove these for efficiency if you set lambda_cycle=0)
             cycle_zebra = gen_Z(fake_horse)
             cycle_horse = gen_H(fake_zebra)
-            cycle_zebra_loss = L1(zebra, cycle_zebra)
-            cycle_horse_loss = L1(horse, cycle_horse)
-
-            # Identity loss (remove these for efficiency if you set lambda_identity=0)
             identity_zebra = gen_Z(zebra)
             identity_horse = gen_H(horse)
-            identity_zebra_loss = L1(zebra, identity_zebra)
-            identity_horse_loss = L1(horse, identity_horse)
-
-            # add all togethor
-            G_loss = (
-                  loss_G_Z
-                + loss_G_H
-                + cycle_zebra_loss * config.lambda_cycle
-                + cycle_horse_loss * config.lambda_cycle
-                + identity_horse_loss * config.lambda_identity
-                + identity_zebra_loss * config.lambda_identity
-            )
-
+            loss_gen = loss_fn_gen(D_H_fake, D_Z_fake, zebra, horse, cycle_zebra, cycle_horse, identity_zebra, identity_horse, config.lambda_cycle, config.lambda_identity)
         opt_gen.zero_grad()
-        g_scaler.scale(G_loss).backward()
+        g_scaler.scale(loss_gen).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
@@ -122,11 +79,7 @@ def train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, L1,
             save_image(fake_horse*0.5+0.5, f"evaluation/fake_horse_{epoch}_{batch_idx}.png")
             save_image(fake_zebra*0.5+0.5, f"evaluation/fake_zebra_{epoch}_{batch_idx}.png")
 
-        loop.set_postfix(H_real=H_reals/(batch_idx+1), 
-                         H_fake=H_fakes/(batch_idx+1),
-                         D_loss=D_loss.item(),
-                         G_loss=G_loss.item(),
-                         )
+        loop.set_postfix(loss_disc=loss_disc.item(), loss_gen=loss_gen.item())
 
 
 def main(config):
@@ -141,9 +94,6 @@ def main(config):
     
     opt_disc = optim.Adam(list(disc_H.parameters()) + list(disc_Z.parameters()), lr=config.learning_rate, betas=(0.5, 0.999))
     opt_gen = optim.Adam(list(gen_Z.parameters()) + list(gen_H.parameters()), lr=config.learning_rate, betas=(0.5, 0.999))
-
-    L1 = nn.L1Loss()   # for Cycle Consistency and Identity Loss
-    MSE = nn.MSELoss() # for Adverserial Loss
 
     if config.load_model:
         load_checkpoint(config.checkpoint_gen_h, gen_H, opt_gen, config.learning_rate, config.device)
@@ -161,7 +111,7 @@ def main(config):
     d_scaler = torch.cuda.amp.GradScaler()
 
     for epoch in range(config.num_epochs):
-        train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, train_loader, opt_disc, opt_gen, L1, MSE, d_scaler, g_scaler, epoch, config.num_epochs, config)
+        train_one_epoch(disc_H, disc_Z, gen_Z, gen_H, train_loader, opt_disc, opt_gen, d_scaler, g_scaler, epoch, config.num_epochs, config)
 
         if config.save_model:
             save_checkpoint(gen_H, opt_gen, filename=config.checkpoint_gen_h)

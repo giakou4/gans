@@ -11,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from model import Generator, Discriminator, initialize_weights
 from dataset import MyImageFolder
 from utils import gradient_penalty, load_checkpoint, save_checkpoint, plot_examples
-from loss import VGGLoss
+from loss import loss_fn_disc, loss_fn_gen
 torch.backends.cudnn.benchmark = True
 
 
@@ -22,10 +22,10 @@ def parse_opt():
     parser.add_argument('--num-epochs', type=int, default=100, help='number of epochs')
     parser.add_argument('--learning-rate', type=float, default=1e-4, help='base learning rate')
     parser.add_argument('--batch-size', type=int, default=16, help='batch sizes')
-    parser.add_argument('--num-workers', type=int, default=4, help='number of workers')
+    parser.add_argument('--num-workers', type=int, default=1, help='number of workers')
     parser.add_argument('--lambda-gp', type=float, default=10, help='gradient penalty lambda')
-    parser.add_argument('--high-res', type=int, default=96, help='images high resolution')
-    parser.add_argument('--low-res', type=int, default=96//4, help='images low resolution')  
+    parser.add_argument('--high-res-size', type=int, default=96, help='images high resolution')
+    parser.add_argument('--low-res-size', type=int, default=96//4, help='images low resolution')  
     parser.add_argument('--load-model', action='store_true', help='load pre-trained model')
     parser.add_argument('--save-model', action='store_true', help='save model after each train epoch')
     parser.add_argument('--checkpoint-gen', type=str, default='./checkpoints/gen.pth.tar', help='path to save generators checkpoint')
@@ -36,7 +36,7 @@ def parse_opt():
     return opt
 
 
-def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, l1, vgg, g_scaler, d_scaler, writer, tb_step, epoch, num_epochs, config):
+def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, g_scaler, d_scaler, writer, tb_step, epoch, num_epochs, config):
     """ One forward pass of Discriminator and Generator """
     
     loop = tqdm(loader, leave=True)
@@ -48,27 +48,21 @@ def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, l1, vgg, g_scaler, d_s
 
         with torch.cuda.amp.autocast():
             fake = gen(low_res)
-            
             disc_real = disc(high_res)
-            disc_fake = disc(fake.detach())
-            
+            disc_fake = disc(fake)
             gp = gradient_penalty(disc, high_res, fake, device=config.device)
-            loss_disc = (-(torch.mean(disc_real) - torch.mean(disc_fake)) + config.lambda_gp * gp)
-
+            loss_disc = loss_fn_disc(disc_fake, disc_real, gp, config.lambda_gp)
         opt_disc.zero_grad()
-        d_scaler.scale(loss_disc).backward()
+        d_scaler.scale(loss_disc).backward(retain_graph=True)
         d_scaler.step(opt_disc)
         d_scaler.update()
 
-        # Train Generator: min log(1 - disc(gen(z))) <-> max log(disc(gen(z))
+        # Train Generator
         with torch.cuda.amp.autocast():
-            l1_loss = 1e-2 * l1(fake, high_res)
-            adversarial_loss = 5e-3 * -torch.mean(disc(fake))
-            loss_for_vgg = vgg(fake, high_res)
-            gen_loss = l1_loss + loss_for_vgg + adversarial_loss
-
+            disc_fake = disc(fake)
+            loss_gen = loss_fn_gen(disc_fake, fake, high_res)
         opt_gen.zero_grad()
-        g_scaler.scale(gen_loss).backward()
+        g_scaler.scale(loss_gen).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
@@ -78,7 +72,7 @@ def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, l1, vgg, g_scaler, d_s
         if batch_idx % 100 == 0 and batch_idx > 0:
             plot_examples("test_images/", gen, "saved_images")
 
-        loop.set_postfix(gen_loss=gen_loss.item(), loss_disc=loss_disc.item())
+        loop.set_postfix(loss_disc=loss_disc.item(), loss_gen=loss_gen.item())
 
     return tb_step
 
@@ -91,7 +85,7 @@ def main(config):
     highres_transform = A.Compose([t_norm, t_tensor])
     lowres_transform = A.Compose([A.Resize(width=config.low_res_size, height=config.low_res_size, interpolation=Image.BICUBIC), t_norm, t_tensor])
     both_transforms = A.Compose([A.RandomCrop(width=config.high_res_size, height=config.high_res_size), A.HorizontalFlip(p=0.5), A.RandomRotate90(p=0.5)])
-    test_transform = A.Compose([t_norm, t_tensor])
+    #test_transform = A.Compose([t_norm, t_tensor])
     
     dataset = MyImageFolder(config.dataset_dir, both_transforms, highres_transform, lowres_transform)
     loader = DataLoader(dataset, batch_size=config.batch_size, shuffle=True, pin_memory=True, num_workers=config.num_workers)
@@ -106,10 +100,7 @@ def main(config):
     
     writer = SummaryWriter("logs")
     tb_step = 0
-    
-    l1 = nn.L1Loss()
-    vgg = VGGLoss(device=config.device)
-    
+       
     gen.train()
     disc.train()
 
@@ -121,7 +112,7 @@ def main(config):
         load_checkpoint(config.checkpoint_disc, disc, opt_disc, config.learning_rate)
 
     for epoch in range(config.num_epochs):
-        tb_step = train_one_epoch(loader, disc, gen, opt_gen, opt_disc, l1, vgg, g_scaler, d_scaler, writer, tb_step, epoch, config.num_epochs, config)
+        tb_step = train_one_epoch(loader, disc, gen, opt_gen, opt_disc, g_scaler, d_scaler, writer, tb_step, epoch, config.num_epochs, config)
 
         if config.save_model:
             save_checkpoint(gen, opt_gen, filename=config.checkpoint_gen)

@@ -62,7 +62,7 @@ Both Generator and Discriminator are hard to implement.
   
 |    |    **Layer**   | **Activation** |    **Size**   | **Kernel** | **Stride** | **Padding** |
 |----|:--------------:|:--------------:|:-------------:|:----------:|:----------:|:-----------:|
-|    |  INPUT (NOISE) |                |    512×1×1    |            |            |             |
+|    |  INPUT (IMAGE) |                |    512×1×1    |            |            |             |
 | 1  |     CONV 2D    |   Leaky ReLU   |    512×4×4    |      4     |      4     |      0      |
 | 2  |   Conv Block   |   Leaky ReLU   |    512×4×4    |      3     |      1     |      1      |
 | 3  |    UPSAMPLE    |                |    512×8×8    |            |            |             |

@@ -2,6 +2,8 @@ import os
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 
 class MyImageFolder(Dataset):
@@ -33,7 +35,15 @@ class MyImageFolder(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = MyImageFolder(root_dir="./data")
+    
+    t_tensor = ToTensorV2()
+    t_norm = A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    highres_transform = A.Compose([t_norm, t_tensor])
+    lowres_transform = A.Compose([A.Resize(width=24, height=24, interpolation=Image.BICUBIC), t_norm, t_tensor])
+    both_transforms = A.Compose([A.RandomCrop(width=96, height=96), A.HorizontalFlip(p=0.5), A.RandomRotate90(p=0.5)])
+    test_transform = A.Compose([t_norm, t_tensor])
+    
+    dataset = MyImageFolder("./data", both_transforms, highres_transform, lowres_transform)
     loader = DataLoader(dataset, batch_size=1, num_workers=8)
 
     for low_res, high_res in loader:

@@ -10,7 +10,7 @@ from tqdm import tqdm
 from model import Generator, Discriminator
 from dataset import MyImageFolder
 from utils import load_checkpoint, save_checkpoint, plot_examples
-from loss import VGGLoss
+from loss import loss_fn_disc, loss_fn_gen
 torch.backends.cudnn.benchmark = True
 
 
@@ -21,7 +21,7 @@ def parse_opt():
     parser.add_argument('--num-epochs', type=int, default=100, help='number of epochs')
     parser.add_argument('--learning-rate', type=float, default=1e-4, help='base learning rate')
     parser.add_argument('--batch-size', type=int, default=16, help='batch sizes')
-    parser.add_argument('--num-workers', type=int, default=4, help='number of workers')
+    parser.add_argument('--num-workers', type=int, default=1, help='number of workers')
     parser.add_argument('--high-res-size', type=int, default=96, help='images high resolution')
     parser.add_argument('--low-res-size', type=int, default=96 // 4, help='images low resolution')  
     parser.add_argument('--load-model', action='store_true', help='load pre-trained model')
@@ -34,7 +34,7 @@ def parse_opt():
     return opt
 
 
-def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, mse, bce, vgg, epoch, num_epochs, config, test_transform):
+def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, epoch, num_epochs, config, test_transform):
     """ One forward pass of Discriminator and Generator """
     
     loop = tqdm(loader, leave=True)
@@ -44,34 +44,26 @@ def train_one_epoch(loader, disc, gen, opt_gen, opt_disc, mse, bce, vgg, epoch, 
         high_res = high_res.to(config.device)
         low_res = low_res.to(config.device)
         
-        ### Train Discriminator: max log(disc(x)) + log(1 - disc(gen(z)))
+        # Train Discriminator
         fake = gen(low_res)
         disc_real = disc(high_res)
-        disc_fake = disc(fake.detach())
-        
-        disc_loss_real = bce(disc_real, torch.ones_like(disc_real) - 0.1 * torch.rand_like(disc_real))
-        disc_loss_fake = bce(disc_fake, torch.zeros_like(disc_fake))
-        loss_disc = disc_loss_fake + disc_loss_real
-
+        disc_fake = disc(fake)
+        loss_disc = loss_fn_disc(disc_fake, disc_real)
         opt_disc.zero_grad()
-        loss_disc.backward()
+        loss_disc.backward(retain_graph=True)
         opt_disc.step()
 
-        # Train Generator: min log(1 - disc(gen(z))) <-> max log(disc(gen(z))
+        # Train Generator
         disc_fake = disc(fake)
-        # l2_loss = mse(fake, high_res)
-        adversarial_loss = 1e-3 * bce(disc_fake, torch.ones_like(disc_fake))
-        loss_for_vgg = 0.006 * vgg(fake, high_res)
-        gen_loss = loss_for_vgg + adversarial_loss
-
+        loss_gen = loss_fn_gen(disc_fake, fake, high_res)
         opt_gen.zero_grad()
-        gen_loss.backward()
+        loss_gen.backward()
         opt_gen.step()
 
         if batch_idx % 100 == 0 and batch_idx > 0:
             plot_examples("test_images/", gen, "saved_images", config.device, test_transform)
             
-        loop.set_postfix(gen_loss=gen_loss.item(), loss_disc=loss_disc.item())
+        loop.set_postfix(loss_disc=loss_disc.item(), loss_gen=loss_gen.item())
 
 
 def main(config):
@@ -93,16 +85,12 @@ def main(config):
     opt_gen  = optim.Adam(gen.parameters(), lr=config.learning_rate, betas=(0.9, 0.999))
     opt_disc = optim.Adam(disc.parameters(), lr=config.learning_rate, betas=(0.9, 0.999))
     
-    mse = nn.MSELoss()
-    bce = nn.BCEWithLogitsLoss()
-    vgg = VGGLoss(device=config.device)
-
     if config.load_model:
         load_checkpoint(config.checkpoint_gen,  gen, opt_gen, config.learning_rate, config.device)
         load_checkpoint(config.checkpoint_disc, disc, opt_disc, config.learning_rate, config.device)
 
     for epoch in range(config.num_epochs):
-        train_one_epoch(loader, disc, gen, opt_gen, opt_disc, mse, bce, vgg, epoch, config.num_epochs, config, test_transform)
+        train_one_epoch(loader, disc, gen, opt_gen, opt_disc, epoch, config.num_epochs, config, test_transform)
 
         if config.save_model:
             save_checkpoint(gen, opt_gen,  filename=config.checkpoint_gen)

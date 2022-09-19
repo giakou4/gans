@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from model import Discriminator, Generator
 from utils import gradient_penalty, plot_to_tensorboard, save_checkpoint, load_checkpoint
+from loss import loss_fn_critic, loss_fn_gen
 torch.backends.cudnn.benchmarks = True
 
 
@@ -66,34 +67,23 @@ def train_one_epoch(dataset, loader, gen, critic, opt_critic, opt_gen, scaler_ge
         real = real.to(config.device)
         cur_batch_size = real.shape[0]
 
-        # Train Critic: max E[critic(real)] - E[critic(fake)] <-> min -E[critic(real)] + E[critic(fake)]
+        # Train Critic
         noise = torch.randn(cur_batch_size, config.z_dim, 1, 1).to(config.device)
-
         with torch.cuda.amp.autocast():
-            
             fake = gen(noise, alpha, step)
-            
             critic_real = critic(real, alpha, step)
-            critic_fake = critic(fake.detach(), alpha, step)
-            
+            critic_fake = critic(fake, alpha, step)
             gp = gradient_penalty(critic, real, fake, alpha, step, device=config.device)
-
-            loss_critic = (
-                -(torch.mean(critic_real) - torch.mean(critic_fake))
-                + config.lambda_gp * gp
-                + (0.001 * torch.mean(critic_real ** 2))
-            )
-
+            loss_critic = loss_fn_critic(critic_fake, critic_real, gp, config.lambda_gp)
         opt_critic.zero_grad()
-        scaler_critic.scale(loss_critic).backward()
+        scaler_critic.scale(loss_critic).backward(retain_graph=True)
         scaler_critic.step(opt_critic)
         scaler_critic.update()
 
-        # Train Generator: max E[critic(gen_fake)] <-> min -E[critic(gen_fake)]
+        # Train Generator
         with torch.cuda.amp.autocast():
             gen_fake = critic(fake, alpha, step)
-            loss_gen = -torch.mean(gen_fake)
-
+            loss_gen = loss_fn_gen(gen_fake)
         opt_gen.zero_grad()
         scaler_gen.scale(loss_gen).backward()
         scaler_gen.step(opt_gen)
@@ -109,11 +99,7 @@ def train_one_epoch(dataset, loader, gen, critic, opt_critic, opt_gen, scaler_ge
             plot_to_tensorboard(writer, loss_critic.item(), loss_gen.item(), real.detach(),  fixed_fakes.detach(), tb_step)
             tb_step += 1
 
-        loop.set_postfix(
-            gp=gp.item(),
-            loss_critic=loss_critic.item(),
-            loss_gen=loss_gen.item(),
-        )
+        loop.set_postfix(loss_critic=loss_critic.item(), loss_gen=loss_gen.item())
 
     return tb_step, alpha
 

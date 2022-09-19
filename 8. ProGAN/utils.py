@@ -18,8 +18,8 @@ def plot_to_tensorboard(writer, loss_critic, loss_gen, real, fake, tensorboard_s
 
 
 def gradient_penalty(critic, real, fake, alpha, train_step, device="cpu"):
-    BATCH_SIZE, C, H, W = real.shape
-    beta = torch.rand((BATCH_SIZE, 1, 1, 1)).repeat(1, C, H, W).to(device)
+    batch_size, channels, height, width = real.shape
+    beta = torch.rand((batch_size, 1, 1, 1)).repeat(1, channels, height, width).to(device)
     interpolated_images = real * beta + fake.detach() * (1 - beta)
     interpolated_images.requires_grad_(True)
 

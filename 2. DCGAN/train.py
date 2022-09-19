@@ -10,6 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from model import Discriminator, Generator, initialize_weights
 from utils import save_checkpoint, load_checkpoint
+from loss import loss_fn_disc, loss_fn_gen
 
 
 def parse_opt():
@@ -46,23 +47,17 @@ def train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, 
         noise = torch.randn(config.batch_size, config.z_dim, 1, 1).to(config.device)
         fake = gen(noise)
 
-        # Train Discriminator: max log(D(x)) + log(1 - D(G(z)))
-        disc_real = disc(real).reshape(-1)
-        loss_disc_real = loss(disc_real, torch.ones_like(disc_real))
-        
-        disc_fake = disc(fake.detach()).reshape(-1)
-        loss_disc_fake = loss(disc_fake, torch.zeros_like(disc_fake))
-        
-        loss_disc = (loss_disc_real + loss_disc_fake) / 2
-        
+        # Train Discriminator
+        disc_real = disc(real).reshape(-1)        
+        disc_fake = disc(fake).reshape(-1)
+        loss_disc = loss_fn_disc(disc_fake, disc_real)
         disc.zero_grad()
-        loss_disc.backward()
+        loss_disc.backward(retain_graph=True)
         opt_disc.step()
 
-        # Train Generator: min log(1 - D(G(z))) <-> max log(D(G(z))
-        output = disc(fake).reshape(-1)
-        loss_gen = loss(output, torch.ones_like(output))
-        
+        # Train Generator
+        disc_fake = disc(fake).reshape(-1)
+        loss_gen = loss_fn_gen(disc_fake)
         gen.zero_grad()
         loss_gen.backward()
         opt_gen.step()
@@ -76,7 +71,7 @@ def train_one_epoch(loader, gen, disc, opt_gen, opt_disc, loss, tb_step, epoch, 
                 writer_fake.add_image("Fake Images", img_grid_fake, global_step=tb_step)
                 tb_step += 1
     
-        loop.set_postfix(loss_disc = loss_disc.item(), loss_gen = loss_gen.item())
+        loop.set_postfix(loss_disc=loss_disc.item(), loss_gen=loss_gen.item())
     
     return tb_step
 
@@ -95,7 +90,6 @@ def main(config):
     
     gen = Generator(config.z_dim, config.img_channels, config.features_gen).to(config.device)
     disc = Discriminator(config.img_channels, config.features_disc).to(config.device)
-    print(gen)
     initialize_weights(gen)
     initialize_weights(disc)
 

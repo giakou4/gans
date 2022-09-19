@@ -10,6 +10,7 @@ from generator import Generator
 from discriminator import Discriminator
 from dataset import MapDataset
 from utils import save_checkpoint, load_checkpoint, save_some_examples
+from loss import loss_fn_disc, loss_fn_gen
 torch.backends.cudnn.benchmark = True
 
 
@@ -34,7 +35,7 @@ def parse_opt():
     return opt
 
 
-def train_one_epoch(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, epoch, num_epochs, config):
+def train_one_epoch(disc, gen, loader, opt_disc, opt_gen, g_scaler, d_scaler, epoch, num_epochs, config):
     """ One forward pass of Discriminator and Generator """
     
     loop = tqdm(loader, leave=True)
@@ -47,36 +48,27 @@ def train_one_epoch(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_s
         # Train Discriminator
         with torch.cuda.amp.autocast():
             y_fake = gen(x)
-            
-            D_real = disc(x, y_target)
-            D_fake = disc(x, y_fake)
-            
-            D_real_loss = bce(D_real, torch.ones_like(D_real))
-            D_fake_loss = bce(D_fake, torch.zeros_like(D_fake))
-            D_loss = (D_real_loss + D_fake_loss) / 2
-
+            disc_real = disc(x, y_target)
+            disc_fake = disc(x, y_fake)
+            loss_disc = loss_fn_disc(disc_fake, disc_real)
         disc.zero_grad()
-        d_scaler.scale(D_loss).backward(retain_graph=True)
+        d_scaler.scale(loss_disc).backward(retain_graph=True)
         d_scaler.step(opt_disc)
         d_scaler.update()
 
         # Train Generator
         with torch.cuda.amp.autocast():
-            D_fake = disc(x, y_fake)
-            
-            G_fake_loss = bce(D_fake, torch.ones_like(D_fake))
-            L1 = l1(y_fake, y_target) * config.l1_lambda
-            G_loss = G_fake_loss + L1
-
+            disc_fake = disc(x, y_fake)
+            loss_gen = loss_fn_gen(disc_fake, y_fake, y_target, config.l1_lambda)
         opt_gen.zero_grad()
-        g_scaler.scale(G_loss).backward()
+        g_scaler.scale(loss_gen).backward()
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        loop.set_postfix(D_loss=D_loss.item(), 
-                         G_loss=G_loss.item(),
-                         D_real=torch.sigmoid(D_real).mean().item(),
-                         D_fake=torch.sigmoid(D_fake).mean().item(),
+        loop.set_postfix(loss_disc=loss_disc.item(), 
+                         loss_gen=loss_gen.item(),
+                         disc_real=torch.sigmoid(disc_real).mean().item(),
+                         disc_fake=torch.sigmoid(disc_fake).mean().item(),
                          )
 
 
@@ -92,9 +84,7 @@ def main(config):
     
     opt_disc = optim.Adam(disc.parameters(), lr=config.learning_rate, betas=(0.5, 0.999),)
     opt_gen = optim.Adam(gen.parameters(), lr=config.learning_rate, betas=(0.5, 0.999))
-    
-    bce = nn.BCEWithLogitsLoss()
-    l1 = nn.L1Loss()
+
 
     train_dataset = MapDataset(config.train_dir, both_transform, transform_only_input, transform_only_mask)
     train_loader = DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True, num_workers=config.num_workers)
@@ -113,7 +103,7 @@ def main(config):
     disc.train()
 
     for epoch in range(config.num_epochs):
-        train_one_epoch(disc, gen, train_loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler, epoch, config.num_epochs, config)
+        train_one_epoch(disc, gen, train_loader, opt_disc, opt_gen, g_scaler, d_scaler, epoch, config.num_epochs, config)
 
         if config.save_model:
             save_checkpoint(gen, opt_gen, filename=config.checkpoint_gen)

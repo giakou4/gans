@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from model import Discriminator, Generator, initialize_weights
 from utils import save_checkpoint, load_checkpoint
+from loss import loss_fn_critic, loss_fn_gen
 
 
 def parse_opt():
@@ -45,15 +46,14 @@ def train_one_epoch(loader, gen, critic, opt_gen, opt_critic, tb_step, epoch, nu
         real = real.to(config.device)
         cur_batch_size = real.shape[0]
 
-        # Train Critic: max E[C(real)] - E[C(fake)]
+        # Train Critic
         for _ in range(config.critic_iterations):
             noise = torch.randn(cur_batch_size, config.z_dim, 1, 1).to(config.device)
             fake = gen(noise)
             
             critic_real = critic(real).reshape(-1)
             critic_fake = critic(fake).reshape(-1)
-            loss_critic = -(torch.mean(critic_real) - torch.mean(critic_fake))
-            
+            loss_critic = loss_fn_critic(critic_fake, critic_real)
             critic.zero_grad()
             loss_critic.backward(retain_graph=True)
             opt_critic.step()
@@ -62,9 +62,9 @@ def train_one_epoch(loader, gen, critic, opt_gen, opt_critic, tb_step, epoch, nu
             for p in critic.parameters():
                 p.data.clamp_(-config.weight_clip, config.weight_clip)
 
-        # Train Generator: max E[C(gen_fake)] <-> min -E[C(gen_fake)]
+        # Train Generator
         gen_fake = critic(fake).reshape(-1)
-        loss_gen = -torch.mean(gen_fake)
+        loss_gen = loss_fn_gen(gen_fake)
         
         gen.zero_grad()
         loss_gen.backward()
@@ -79,7 +79,7 @@ def train_one_epoch(loader, gen, critic, opt_gen, opt_critic, tb_step, epoch, nu
                 writer_fake.add_image("Fake", img_grid_fake, global_step=tb_step)
                 tb_step += 1
             
-        loop.set_postfix(loss_critic = loss_critic.item(), loss_gen = loss_gen.item())
+        loop.set_postfix(loss_critic=loss_critic.item(), loss_gen=loss_gen.item())
     
     return tb_step
     
