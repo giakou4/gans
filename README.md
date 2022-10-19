@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/giakou4/gans/main/bg.jpg">
+</p>
+
 # Generative Adversarial Networks (GANs)
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
